@@ -17,7 +17,8 @@ FROM openjdk:17-slim as tron
 
 # Copy the jar to the production image from the builder stage.
 COPY --from=builder /home/gradle/build/libs/gradle-all.jar /tron.jar
-EXPOSE 8080
+
+ENV PORT 8080
 
 # Run the web service on container startup.
 CMD [ "java", "-jar", "-Djava.security.egd=file:/dev/./urandom", "/tron.jar" ]
