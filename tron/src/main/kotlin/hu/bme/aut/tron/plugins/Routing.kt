@@ -2,6 +2,7 @@ package hu.bme.aut.tron.plugins
 
 import hu.bme.aut.tron.api.BoardRecord
 import hu.bme.aut.tron.api.Leaderboard
+import hu.bme.aut.tron.service.LobbyService
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -59,6 +60,19 @@ fun Application.configureRouting() {
                     )
                 )
             )
+        }
+        route("/lobbies") {
+            get("/") {
+                call.respond(LobbyService.getAll())
+            }
+            get("/{id}") {
+                val id = call.parameters["id"]!!
+                call.respond(LobbyService.getLobby(id)!!)
+            }
+            post("/create") {
+                //val settings = call.receive<Settings>()
+                call.respondText { LobbyService.createNewLobby() }
+            }
         }
     }
 }
