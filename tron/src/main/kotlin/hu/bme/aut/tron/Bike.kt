@@ -1,6 +1,6 @@
 package hu.bme.aut.tron;
 
-import hu.bme.aut.tron.data.Direction
+import hu.bme.aut.tron.api.Direction
 
 class Bike(val id: String, val name: String, val color: Byte){
     var x: Int = -1
