@@ -17,6 +17,7 @@ val formatter = Json {
             subclass(NewMapMessage::class)
             subclass(NextColorMessage::class)
             subclass(ReadyMessage::class)
+            subclass(StepMessage::class)
         }
         polymorphic(ServerMessage::class) {
             subclass(BadMessage::class)
@@ -26,6 +27,8 @@ val formatter = Json {
             subclass(PlayersMessage::class)
             subclass(CountDownMessage::class)
             subclass(StartMessage::class)
+            subclass(RequestStepMessage::class)
+            subclass(MapUpdateMessage::class)
         }
     }
 }

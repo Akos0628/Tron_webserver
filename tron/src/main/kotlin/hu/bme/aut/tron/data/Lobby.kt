@@ -6,23 +6,27 @@ import hu.bme.aut.tron.service.LobbyService
 import io.ktor.server.websocket.*
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlin.time.Duration
 
 const val COUNT_DOWN_SEC = 3
 const val MAX_PLAYER_LIMIT = 4
+const val MAX_HEIGHT = 64
+const val MAX_WIDTH = 114
 
 class Lobby(val id: String) {
     val visibility: Visibility = Visibility.CLOSED
     var status: LobbyStatus = LobbyStatus.WAITING
     private var players: Map<DefaultWebSocketServerSession, Player> = emptyMap()
     private var gameSettings = Settings(
-        playerLimit = 1,
+        playerLimit = 2,
         turnTimeLimit = Duration.parse("30s").inWholeMilliseconds,
         bots = emptyList(),
-        mapSize = 64 to 114
+        mapSize = MAX_HEIGHT to MAX_WIDTH
     )
-    private var availableColors = (0..10).toMutableList()
+    private var availableColors = (1..10).map { it.toByte() }.toMutableList()
+    private var game: Game? = null
 
     private lateinit var gameMap: List<List<Byte>>
     private lateinit var leader: DefaultWebSocketServerSession
@@ -33,8 +37,23 @@ class Lobby(val id: String) {
         }
     }
 
+    suspend fun generateNewMap() {
+        // Ide kell a pálya generálást megvalósítani
+        gameMap = generateSequence {
+            generateSequence {
+                (0).toByte()
+            }.take(gameSettings.mapSize.first).toList()
+        }.take(gameSettings.mapSize.second).toList()
+        // Innentől ne változtass
+        players.forEach { (session, _) ->
+            session.sendMessage(MapMessage(gameMap))
+        }
+    }
+
     suspend fun playerJoin(id: DefaultWebSocketServerSession, player: Player): Boolean {
-        if(players.isEmpty()) {
+        if(status != LobbyStatus.WAITING) {
+            return false
+        } else if(players.isEmpty()) {
             leader = id
             players += (id to player)
             id.sendMessage(SettingsChangedMessage(gameSettings))
@@ -53,15 +72,18 @@ class Lobby(val id: String) {
     }
 
     suspend fun disconnect(playerId: DefaultWebSocketServerSession) {
-        availableColors += players[playerId]!!.colorId
-        players -= playerId
-        if (players.isEmpty()) {
-            LobbyService.removeLobby(id)
-        } else {
-            if (playerId == leader) {
-                leader = players.keys.random()
+        val player = players[playerId]
+        if (player != null) {
+            availableColors += player.colorId
+            players -= playerId
+            if (players.isEmpty()) {
+                LobbyService.removeLobby(id)
+            } else {
+                if (playerId == leader) {
+                    leader = players.keys.random()
+                }
+                sendLobbyPlayers()
             }
-            sendLobbyPlayers()
         }
     }
 
@@ -79,23 +101,10 @@ class Lobby(val id: String) {
         }
     }
 
-    fun getAvailableColorId(): Int {
+    fun getAvailableColorId(): Byte {
         val selected = availableColors.min()
         availableColors -= selected
         return selected
-    }
-
-    suspend fun generateNewMap() {
-        // Ide kell a pálya generálást megvalósítani
-        gameMap = generateSequence {
-            generateSequence {
-                (0..1).random().toByte()
-            }.take(gameSettings.mapSize.first).toList()
-        }.take(gameSettings.mapSize.second).toList()
-        // Innentől ne változtass
-        players.forEach { (session, _) ->
-            session.sendMessage(MapMessage(gameMap))
-        }
     }
 
     suspend fun rollNextColor(session: DefaultWebSocketServerSession) {
@@ -125,37 +134,58 @@ class Lobby(val id: String) {
             initiator.sendMessage(BadMessage("The time limit is too low"))
         } else if (settings.mapSize.first < 20 || settings.mapSize.second < 36) {
             initiator.sendMessage(BadMessage("Map size is too small"))
-        } else if (settings.mapSize.first > 64 || settings.mapSize.second > 114) {
+        } else if (settings.mapSize.first > MAX_HEIGHT || settings.mapSize.second > MAX_WIDTH) {
             initiator.sendMessage(BadMessage("Map size is too big"))
         } else {
+            val previousMapSize = gameSettings.mapSize
             gameSettings = settings
             players.forEach { (session, _) ->
                 session.sendMessage(SettingsChangedMessage(gameSettings))
             }
-            generateNewMap()
+
+            if (previousMapSize != gameSettings.mapSize)
+                generateNewMap()
         }
     }
 
     suspend fun handleReady(id: DefaultWebSocketServerSession, ready: Boolean) {
         players[id]!!.ready = ready
 
-        coroutineScope {
-            sendLobbyPlayers()
+        sendLobbyPlayers()
+
+        if (players.all { it.value.ready }) {
             status = LobbyStatus.GAME
             delay(1000L)
 
-            if (players.all { it.value.ready }) {
-                (COUNT_DOWN_SEC downTo 1).forEach { sec ->
-                    players.forEach { (session, _) ->
-                        session.sendMessage(CountDownMessage(sec))
-                    }
-                    delay(1000L)
+            (COUNT_DOWN_SEC downTo 1).forEach { sec ->
+                players.forEach { (session, _) ->
+                    session.sendMessage(CountDownMessage(sec))
                 }
+                delay(1000L)
             }
 
             players.forEach { (session, _) ->
                 session.sendMessage(StartMessage())
             }
+            game = Game(
+                players.values.toList(),
+                gameSettings,
+                gameMap,
+                availableColors
+            )
+            game!!.playGame()
+            status = LobbyStatus.FINISHED
+            delay(10000L)
+
+            game = null
+            status = LobbyStatus.WAITING
         }
+        println("aaaaa1")
+    }
+
+    suspend fun handleStep(id: DefaultWebSocketServerSession, dir: Direction) {
+        println("aaaaa2")
+        game?.handlePlayerMove(id, dir)
+        println("aaaaa20")
     }
 }

@@ -11,6 +11,7 @@ import io.ktor.server.application.*
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
 import io.ktor.websocket.*
+import kotlinx.coroutines.launch
 import java.time.Duration
 
 const val WRONG_MESSAGE = "Can't use that function in the current state of the game"
@@ -45,7 +46,7 @@ fun Application.configureSockets() {
                                     is NewMapMessage -> lobby.generateNewMap()
                                     is NextColorMessage -> lobby.rollNextColor(session)
                                     is SettingsMessage -> lobby.newSettings(session, clientMessage.settings)
-                                    is ReadyMessage -> lobby.handleReady(session, clientMessage.value)
+                                    is ReadyMessage -> launch { lobby.handleReady(session, clientMessage.value) }
                                     is LeaveMessage -> {
                                         joined = false
                                     }
@@ -54,6 +55,7 @@ fun Application.configureSockets() {
                             }
                             LobbyStatus.GAME -> {
                                 when (clientMessage) {
+                                    is StepMessage -> lobby.handleStep(session, clientMessage.direction)
                                     is LeaveMessage -> {
                                         joined = false
                                     }

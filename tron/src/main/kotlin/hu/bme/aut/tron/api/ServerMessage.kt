@@ -33,3 +33,11 @@ data class CountDownMessage(val sec: Int) : ServerMessage()
 @Serializable
 @SerialName("start")
 data class StartMessage(val msg: String? = null) : ServerMessage()
+
+@Serializable
+@SerialName("requestStep")
+data class RequestStepMessage(val x: Int, val y: Int) : ServerMessage()
+
+@Serializable
+@SerialName("mapUpdate")
+data class MapUpdateMessage(val bikes: List<Pair<Boolean,List<Pair<Int, Int>>>>) : ServerMessage()

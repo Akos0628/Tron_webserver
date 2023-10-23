@@ -30,3 +30,6 @@ data class NextColorMessage(val msg: String? = null) : ClientMessage()
 @SerialName("ready")
 data class ReadyMessage(val value: Boolean) : ClientMessage()
 
+@Serializable
+@SerialName("step")
+data class StepMessage(val direction: Direction) : ClientMessage()

@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ApiPlayer(
     val name: String,
-    val colorId: Int,
+    val colorId: Byte,
     val isLeader: Boolean,
     val isReady: Boolean
 )
