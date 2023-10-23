@@ -1,8 +1,17 @@
 package hu.bme.aut.tron.data
 
-import io.ktor.websocket.*
-import java.util.UUID.randomUUID
+import io.ktor.server.websocket.*
 
-class Player(val name: String, val session: WebSocketSession) {
-    val id: String = randomUUID().toString()
+class Player(
+    name: String,
+    var colorId: Int,
+    private val session: DefaultWebSocketServerSession
+) : Character(name) {
+    override fun move() {
+        TODO("Not yet implemented")
+    }
+
+    override fun die() {
+        TODO("Not yet implemented")
+    }
 }

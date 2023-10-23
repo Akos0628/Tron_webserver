@@ -1,32 +1,19 @@
 package hu.bme.aut.tron.plugins
 
-import hu.bme.aut.tron.api.JoinMessage
-import hu.bme.aut.tron.api.LeaveMessage
-import hu.bme.aut.tron.api.Message
-import hu.bme.aut.tron.api.StepMessage
+import hu.bme.aut.tron.api.*
+import hu.bme.aut.tron.data.LobbyStatus
 import hu.bme.aut.tron.data.Player
+import hu.bme.aut.tron.helpers.formatter
+import hu.bme.aut.tron.helpers.sendMessage
 import hu.bme.aut.tron.service.LobbyService
 import io.ktor.serialization.kotlinx.*
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
 import io.ktor.websocket.*
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.modules.SerializersModule
-import kotlinx.serialization.modules.polymorphic
-import kotlinx.serialization.modules.subclass
 import java.time.Duration
 
-private val formatter = Json {
-    ignoreUnknownKeys = true
-    serializersModule = SerializersModule {
-        polymorphic(Message::class) {
-            subclass(JoinMessage::class)
-            subclass(StepMessage::class)
-            subclass(LeaveMessage::class)
-        }
-    }
-}
+const val WRONG_MESSAGE = "Can't use that function in the current state of the game"
 
 fun Application.configureSockets() {
     install(WebSockets) {
@@ -42,32 +29,52 @@ fun Application.configureSockets() {
             send(lobbyId)
             if(LobbyService.exists(lobbyId)) {
                 val lobby = LobbyService.getLobby(lobbyId)!!
-                var session = this to ""
+                val session = this
 
                 try {
                     send("Checking lobby status")
                     val joinMessage = receiveDeserialized<JoinMessage>()
 
-                    val player = Player(joinMessage.name, session.first)
-                    session = session.first to player.id
-                    var joined = true
+                    var joined = lobby.playerJoin(session, Player(joinMessage.name, lobby.getAvailableColorId(), session))
                     while (joined) {
-                        val message = receiveDeserialized<Message>()
+                        val clientMessage = receiveDeserialized<ClientMessage>()
                         // Itt határozzuk meg, hogy milyen üzenetet kell lekezelni
-                        val messageType = when (message) {
-                            is StepMessage -> send("chat")
-                            is LeaveMessage -> {
-                                send("leave1")
-                                joined = false
+                        when (lobby.status) {
+                            LobbyStatus.WAITING -> {
+                                when (clientMessage) {
+                                    is NewMapMessage -> lobby.generateNewMap()
+                                    is NextColorMessage -> lobby.rollNextColor(session)
+                                    is SettingsMessage -> lobby.newSettings(session, clientMessage.settings)
+                                    is ReadyMessage -> lobby.handleReady(session, clientMessage.value)
+                                    is LeaveMessage -> {
+                                        joined = false
+                                    }
+                                    else -> session.sendMessage(BadMessage(WRONG_MESSAGE))
+                                }
                             }
-                            else -> send("meh")
+                            LobbyStatus.GAME -> {
+                                when (clientMessage) {
+                                    is LeaveMessage -> {
+                                        joined = false
+                                    }
+                                    else -> session.sendMessage(BadMessage(WRONG_MESSAGE))
+                                }
+                            }
+                            LobbyStatus.FINISHED -> {
+                                when (clientMessage) {
+                                    is LeaveMessage -> {
+                                        joined = false
+                                    }
+                                    else -> session.sendMessage(BadMessage(WRONG_MESSAGE))
+                                }
+                            }
                         }
                     }
                 } catch (e: Exception) {
                     println(e.localizedMessage)
                 } finally {
                     println("Removing $session!")
-                    lobby.disconnect(session.second)
+                    lobby.disconnect(session)
                 }
             }
         }

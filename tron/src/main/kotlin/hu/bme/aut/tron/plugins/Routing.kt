@@ -62,15 +62,14 @@ fun Application.configureRouting() {
             )
         }
         route("/lobbies") {
-            get("/") {
-                call.respond(LobbyService.getAll())
+            get {
+                call.respond(LobbyService.getAllOpen().map { it.id })
             }
             get("/{id}") {
                 val id = call.parameters["id"]!!
-                call.respond(LobbyService.getLobby(id)!!)
+                call.respond(LobbyService.getLobby(id)!!.visibility)
             }
             post("/create") {
-                //val settings = call.receive<Settings>()
                 call.respondText { LobbyService.createNewLobby() }
             }
         }
