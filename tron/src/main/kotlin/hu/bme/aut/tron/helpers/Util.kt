@@ -21,6 +21,7 @@ val formatter = Json {
         }
         polymorphic(ServerMessage::class) {
             subclass(BadMessage::class)
+            subclass(LeavingMessage::class)
             subclass(MapMessage::class)
             subclass(SettingsChangedMessage::class)
             subclass(LobbyFullMessage::class)

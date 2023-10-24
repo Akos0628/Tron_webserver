@@ -14,7 +14,6 @@ class Game(
 ) {
     private val bikes: List<Bike>
     private var map: MutableList<MutableList<Byte>> = mutableListOf()
-    var currentStepper: Bike? = null
 
     init {
         map = originalMap.map { it.toMutableList() }.toMutableList()
@@ -45,12 +44,9 @@ class Game(
 
         while(bikes.all { it.isAlive }){
             bikes.filter { it.isAlive }.forEach { bike ->
-                bike.requestStep(this)
+                val dir = bike.requestStep(this)
                 println("aaaaa5")
-                currentStepper = bike
-                while (currentStepper != null) {
-                    delay(100L)
-                }
+                stepPlayer(bike, dir)
                 println("aaaaa6")
                 handleRoutes()
             }
@@ -60,14 +56,6 @@ class Game(
     private suspend fun handleRoutes() {
         val bikeRoutes = bikes.map { Pair(it.isAlive, it.route) }
         bikes.forEach { it.sendUpdate(map, bikeRoutes) }
-    }
-
-    suspend fun handlePlayerMove(id: DefaultWebSocketServerSession, dir: Direction) {
-        println("aaaaa3")
-        if (currentStepper?.isDriverOf(id) == true) {
-            println("aaaa7a")
-            stepPlayer(currentStepper!!, dir)
-        }
     }
 
     suspend fun stepPlayer(bike: Bike, dir: Direction) {
@@ -95,7 +83,5 @@ class Game(
         } else {
             bike.collide()
         }
-
-        currentStepper = null
     }
 }

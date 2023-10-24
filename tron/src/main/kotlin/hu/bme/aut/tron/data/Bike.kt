@@ -19,7 +19,7 @@ class Bike(
         route += position
     }
 
-    suspend fun requestStep(game: Game) = driver.move(position.first, position.second, game, this)
+    suspend fun requestStep(game: Game): Direction = driver.move(position.first, position.second)
 
     suspend fun sendUpdate(map: List<List<Byte>>, routes: List<Pair<Boolean,List<Pair<Int, Int>>>>) = driver.currentState(map, routes)
 

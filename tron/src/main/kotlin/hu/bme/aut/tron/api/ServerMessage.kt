@@ -11,6 +11,10 @@ abstract class ServerMessage
 data class BadMessage(val msg: String) : ServerMessage()
 
 @Serializable
+@SerialName("leaving")
+data class LeavingMessage(val msg: String) : ServerMessage()
+
+@Serializable
 @SerialName("map")
 data class MapMessage(val map: List<List<Byte>>) : ServerMessage()
 

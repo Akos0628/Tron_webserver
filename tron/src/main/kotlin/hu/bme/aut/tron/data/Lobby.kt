@@ -182,10 +182,4 @@ class Lobby(val id: String) {
         }
         println("aaaaa1")
     }
-
-    suspend fun handleStep(id: DefaultWebSocketServerSession, dir: Direction) {
-        println("aaaaa2")
-        game?.handlePlayerMove(id, dir)
-        println("aaaaa20")
-    }
 }

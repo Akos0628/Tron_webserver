@@ -20,20 +20,13 @@ class Bot(
         return false
     }
 
-    override suspend fun move(x: Int, y: Int, game: Game, bike: Bike): Unit = coroutineScope {
-        launch {
-            while (game.currentStepper != null) {
-                delay(500L)
-            }
-
-            val dir = when((0..3).random()) {
-                0 -> Direction.UP
-                1 -> Direction.RIGHT
-                2 -> Direction.DOWN
-                3 -> Direction.LEFT
-                else -> Direction.UP
-            }
-            game.stepPlayer(bike, dir)
+    override suspend fun move(x: Int, y: Int): Direction {
+        return when ((0..3).random()) {
+            0 -> Direction.UP
+            1 -> Direction.RIGHT
+            2 -> Direction.DOWN
+            3 -> Direction.LEFT
+            else -> Direction.UP
         }
     }
 

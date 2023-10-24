@@ -36,7 +36,8 @@ fun Application.configureSockets() {
                     send("Checking lobby status")
                     val joinMessage = receiveDeserialized<JoinMessage>()
 
-                    var joined = lobby.playerJoin(session, Player(joinMessage.name, lobby.getAvailableColorId(), session))
+                    var player = Player(joinMessage.name, lobby.getAvailableColorId(), session)
+                    var joined = lobby.playerJoin(session, player)
                     while (joined) {
                         val clientMessage = receiveDeserialized<ClientMessage>()
                         // Itt határozzuk meg, hogy milyen üzenetet kell lekezelni
@@ -55,7 +56,7 @@ fun Application.configureSockets() {
                             }
                             LobbyStatus.GAME -> {
                                 when (clientMessage) {
-                                    is StepMessage -> lobby.handleStep(session, clientMessage.direction)
+                                    is StepMessage -> player.push(clientMessage)
                                     is LeaveMessage -> {
                                         joined = false
                                     }
@@ -72,6 +73,8 @@ fun Application.configureSockets() {
                             }
                         }
                     }
+
+                    session.sendMessage(LeavingMessage("Leaving the lobby"))
                 } catch (e: Exception) {
                     println(e.localizedMessage)
                 } finally {
