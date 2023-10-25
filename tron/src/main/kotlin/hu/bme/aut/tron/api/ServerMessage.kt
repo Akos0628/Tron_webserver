@@ -44,4 +44,12 @@ data class RequestStepMessage(val x: Int, val y: Int) : ServerMessage()
 
 @Serializable
 @SerialName("mapUpdate")
-data class MapUpdateMessage(val bikes: List<Pair<Boolean,List<Pair<Int, Int>>>>) : ServerMessage()
+data class MapUpdateMessage(val bikes: List<BikeInfo>) : ServerMessage()
+
+@Serializable
+@SerialName("timeout")
+data class TimeoutMessage(val msg: String, val direction: Direction) : ServerMessage()
+
+@Serializable
+@SerialName("die")
+data class DieMessage(val msg: String) : ServerMessage()

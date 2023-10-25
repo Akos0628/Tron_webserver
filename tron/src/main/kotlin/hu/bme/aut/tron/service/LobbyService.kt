@@ -1,7 +1,7 @@
 package hu.bme.aut.tron.service
 
 import hu.bme.aut.tron.api.Visibility
-import hu.bme.aut.tron.data.Lobby
+import hu.bme.aut.tron.logic.Lobby
 import hu.bme.aut.tron.helpers.getRandomString
 
 object LobbyService {

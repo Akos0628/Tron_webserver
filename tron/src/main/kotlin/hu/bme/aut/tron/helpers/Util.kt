@@ -30,6 +30,8 @@ val formatter = Json {
             subclass(StartMessage::class)
             subclass(RequestStepMessage::class)
             subclass(MapUpdateMessage::class)
+            subclass(TimeoutMessage::class)
+            subclass(DieMessage::class)
         }
     }
 }

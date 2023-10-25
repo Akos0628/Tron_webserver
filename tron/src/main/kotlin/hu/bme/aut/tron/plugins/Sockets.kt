@@ -1,8 +1,8 @@
 package hu.bme.aut.tron.plugins
 
 import hu.bme.aut.tron.api.*
-import hu.bme.aut.tron.data.LobbyStatus
-import hu.bme.aut.tron.data.Player
+import hu.bme.aut.tron.logic.LobbyStatus
+import hu.bme.aut.tron.logic.Player
 import hu.bme.aut.tron.helpers.formatter
 import hu.bme.aut.tron.helpers.sendMessage
 import hu.bme.aut.tron.service.LobbyService
@@ -11,7 +11,6 @@ import io.ktor.server.application.*
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
 import io.ktor.websocket.*
-import kotlinx.coroutines.launch
 import java.time.Duration
 
 const val WRONG_MESSAGE = "Can't use that function in the current state of the game"
@@ -36,7 +35,7 @@ fun Application.configureSockets() {
                     send("Checking lobby status")
                     val joinMessage = receiveDeserialized<JoinMessage>()
 
-                    var player = Player(joinMessage.name, lobby.getAvailableColorId(), session)
+                    val player = Player(joinMessage.name, lobby.getAvailableColorId(), session)
                     var joined = lobby.playerJoin(session, player)
                     while (joined) {
                         val clientMessage = receiveDeserialized<ClientMessage>()
@@ -47,7 +46,7 @@ fun Application.configureSockets() {
                                     is NewMapMessage -> lobby.generateNewMap()
                                     is NextColorMessage -> lobby.rollNextColor(session)
                                     is SettingsMessage -> lobby.newSettings(session, clientMessage.settings)
-                                    is ReadyMessage -> launch { lobby.handleReady(session, clientMessage.value) }
+                                    is ReadyMessage -> lobby.handleReady(session, clientMessage.value)
                                     is LeaveMessage -> {
                                         joined = false
                                     }

@@ -8,11 +8,11 @@ abstract class ClientMessage
 
 @Serializable
 @SerialName("join")
-data class JoinMessage(val name: String) : ClientMessage() // {"type":"join","name":"akos"}
+data class JoinMessage(val name: String) : ClientMessage()
 
 @Serializable
 @SerialName("leave")
-data class LeaveMessage(val playerId: String? = null) : ClientMessage() // {"type":"leave"}
+data class LeaveMessage(val playerId: String? = null) : ClientMessage()
 
 @Serializable
 @SerialName("settings")
@@ -32,4 +32,4 @@ data class ReadyMessage(val value: Boolean) : ClientMessage()
 
 @Serializable
 @SerialName("step")
-data class StepMessage(val direction: Direction) : ClientMessage()
+data class StepMessage(val direction: Direction, val x: Int, val y: Int) : ClientMessage()

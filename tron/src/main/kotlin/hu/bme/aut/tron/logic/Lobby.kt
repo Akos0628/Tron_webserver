@@ -1,4 +1,4 @@
-package hu.bme.aut.tron.data
+package hu.bme.aut.tron.logic
 
 import hu.bme.aut.tron.api.*
 import hu.bme.aut.tron.helpers.sendMessage
@@ -21,12 +21,11 @@ class Lobby(val id: String) {
     private var players: Map<DefaultWebSocketServerSession, Player> = emptyMap()
     private var gameSettings = Settings(
         playerLimit = 2,
-        turnTimeLimit = Duration.parse("30s").inWholeMilliseconds,
+        turnTimeLimit = Duration.parse("10s").inWholeMilliseconds,
         bots = emptyList(),
-        mapSize = MAX_HEIGHT to MAX_WIDTH
+        mapSize = Position(MAX_HEIGHT, MAX_WIDTH)
     )
     private var availableColors = (1..10).map { it.toByte() }.toMutableList()
-    private var game: Game? = null
 
     private lateinit var gameMap: List<List<Byte>>
     private lateinit var leader: DefaultWebSocketServerSession
@@ -42,8 +41,9 @@ class Lobby(val id: String) {
         gameMap = generateSequence {
             generateSequence {
                 (0).toByte()
-            }.take(gameSettings.mapSize.first).toList()
-        }.take(gameSettings.mapSize.second).toList()
+            }.take(gameSettings.mapSize.x).toList()
+        }.take(gameSettings.mapSize.y).toList()
+
         // Innentől ne változtass
         players.forEach { (session, _) ->
             session.sendMessage(MapMessage(gameMap))
@@ -132,9 +132,9 @@ class Lobby(val id: String) {
             initiator.sendMessage(BadMessage("The number of joined players (${players.size}) and the number of bots (${settings.bots.size}) exceeds the player limit (${settings.playerLimit})"))
         } else if (settings.turnTimeLimit < 1) {
             initiator.sendMessage(BadMessage("The time limit is too low"))
-        } else if (settings.mapSize.first < 20 || settings.mapSize.second < 36) {
+        } else if (settings.mapSize.x < 20 || settings.mapSize.y < 36) {
             initiator.sendMessage(BadMessage("Map size is too small"))
-        } else if (settings.mapSize.first > MAX_HEIGHT || settings.mapSize.second > MAX_WIDTH) {
+        } else if (settings.mapSize.x > MAX_HEIGHT || settings.mapSize.y > MAX_WIDTH) {
             initiator.sendMessage(BadMessage("Map size is too big"))
         } else {
             val previousMapSize = gameSettings.mapSize
@@ -148,7 +148,7 @@ class Lobby(val id: String) {
         }
     }
 
-    suspend fun handleReady(id: DefaultWebSocketServerSession, ready: Boolean) {
+    suspend fun handleReady(id: DefaultWebSocketServerSession, ready: Boolean) = coroutineScope {
         players[id]!!.ready = ready
 
         sendLobbyPlayers()
@@ -167,19 +167,19 @@ class Lobby(val id: String) {
             players.forEach { (session, _) ->
                 session.sendMessage(StartMessage())
             }
-            game = Game(
-                players.values.toList(),
-                gameSettings,
-                gameMap,
-                availableColors
-            )
-            game!!.playGame()
-            status = LobbyStatus.FINISHED
-            delay(10000L)
+            launch {
+                val game = Game(
+                    players.values.toList(),
+                    gameSettings,
+                    gameMap,
+                    availableColors
+                )
+                game.playGame()
+                status = LobbyStatus.FINISHED
+                delay(10000L)
 
-            game = null
-            status = LobbyStatus.WAITING
+                status = LobbyStatus.WAITING
+            }
         }
-        println("aaaaa1")
     }
 }
