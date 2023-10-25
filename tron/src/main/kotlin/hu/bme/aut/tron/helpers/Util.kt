@@ -32,6 +32,7 @@ val formatter = Json {
             subclass(MapUpdateMessage::class)
             subclass(TimeoutMessage::class)
             subclass(DieMessage::class)
+            subclass(GameOverMessage::class)
         }
     }
 }
@@ -46,3 +47,5 @@ fun getRandomString(length: Int) : String {
 suspend inline fun DefaultWebSocketServerSession.sendMessage(msg: ServerMessage) {
     sendSerialized(msg)
 }
+
+fun List<List<Byte>>.isInside(x: Int, y: Int): Boolean = x >= 0 && y >= 0 && x < this.size && y < this[0].size

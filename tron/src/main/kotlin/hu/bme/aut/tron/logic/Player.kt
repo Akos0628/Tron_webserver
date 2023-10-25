@@ -11,6 +11,7 @@ class Player(
     colorId: Byte,
     private val session: DefaultWebSocketServerSession
 ) : Character(name, colorId) {
+    private var routes: List<BikeInfo> = emptyList()
     private var stepMessageQueue = MutableSharedFlow<StepMessage>()
     suspend fun push(message: StepMessage) {
         stepMessageQueue.emit(message)
@@ -25,22 +26,28 @@ class Player(
         }
 
         if (response == null) {
-            val automaticResponse = when ((0..3).random()) {
-                0 -> Direction.UP
-                1 -> Direction.RIGHT
-                2 -> Direction.DOWN
-                3 -> Direction.LEFT
-                else -> Direction.UP
-            }
-            session.sendMessage(TimeoutMessage("Response was too slow", automaticResponse))
+            var automaticResponse: Pair<Direction, Position>
+            val myRoute = routes.find { it.colorId == colorId }!!.route
 
-            return@coroutineScope automaticResponse
+            do {
+                automaticResponse = when ((0..3).random()) {
+                    0 -> Direction.UP to Position(x,y+1)
+                    1 -> Direction.RIGHT to Position(x+1,y)
+                    2 -> Direction.DOWN to Position(x,y-1)
+                    3 -> Direction.LEFT to Position(x-1,y)
+                    else -> Direction.UP to Position(x,y+1)
+                }
+            } while (myRoute.last() == automaticResponse.second)
+            session.sendMessage(TimeoutMessage("Response was too slow", automaticResponse.first))
+
+            return@coroutineScope automaticResponse.first
         } else {
             return@coroutineScope response
         }
     }
 
     override suspend fun currentState(newMap: List<List<Byte>>, routes: List<BikeInfo>) {
+        this.routes = routes
         session.sendMessage(MapUpdateMessage(routes))
     }
 

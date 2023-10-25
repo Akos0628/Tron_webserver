@@ -14,6 +14,7 @@ const val COUNT_DOWN_SEC = 3
 const val MAX_PLAYER_LIMIT = 4
 const val MAX_HEIGHT = 64
 const val MAX_WIDTH = 114
+const val TURN_LIMIT = "1s"
 
 class Lobby(val id: String) {
     val visibility: Visibility = Visibility.CLOSED
@@ -21,9 +22,9 @@ class Lobby(val id: String) {
     private var players: Map<DefaultWebSocketServerSession, Player> = emptyMap()
     private var gameSettings = Settings(
         playerLimit = 2,
-        turnTimeLimit = Duration.parse("10s").inWholeMilliseconds,
+        turnTimeLimit = Duration.parse(TURN_LIMIT).inWholeMilliseconds,
         bots = emptyList(),
-        mapSize = Position(MAX_HEIGHT, MAX_WIDTH)
+        mapSize = Position(MAX_WIDTH, MAX_HEIGHT)
     )
     private var availableColors = (1..10).map { it.toByte() }.toMutableList()
 
@@ -41,8 +42,8 @@ class Lobby(val id: String) {
         gameMap = generateSequence {
             generateSequence {
                 (0).toByte()
-            }.take(gameSettings.mapSize.x).toList()
-        }.take(gameSettings.mapSize.y).toList()
+            }.take(gameSettings.mapSize.y).toList()
+        }.take(gameSettings.mapSize.x).toList()
 
         // Innentől ne változtass
         players.forEach { (session, _) ->
@@ -174,8 +175,19 @@ class Lobby(val id: String) {
                     gameMap,
                     availableColors
                 )
-                game.playGame()
+                val winnerId = game.playGame()
                 status = LobbyStatus.FINISHED
+
+                val winner = players.values.find { it.colorId == winnerId }!!
+                players.forEach { (session, player) ->
+                    if (player.colorId == winnerId) {
+                        session.sendMessage(GameOverMessage(winnerId, "You won!"))
+                    } else {
+
+                        session.sendMessage(GameOverMessage(winnerId, "${winner.name} won!"))
+                    }
+                }
+                //TODO: Store the data to the leaderboard
                 delay(10000L)
 
                 status = LobbyStatus.WAITING

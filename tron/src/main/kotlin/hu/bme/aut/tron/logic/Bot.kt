@@ -2,6 +2,7 @@ package hu.bme.aut.tron.logic
 
 import hu.bme.aut.tron.api.BikeInfo
 import hu.bme.aut.tron.api.Direction
+import hu.bme.aut.tron.api.Direction.*
 
 class Bot(
     private var map: List<List<Byte>>,
@@ -13,13 +14,7 @@ class Bot(
     }
 
     override suspend fun move(x: Int, y: Int, timeout: Long): Direction {
-        return when ((0..3).random()) {
-            0 -> Direction.UP
-            1 -> Direction.RIGHT
-            2 -> Direction.DOWN
-            3 -> Direction.LEFT
-            else -> Direction.UP
-        }
+        return (listOf(UP, RIGHT, DOWN, LEFT).random())
     }
 
     override suspend fun currentState(newMap: List<List<Byte>>, routes: List<BikeInfo>) {

@@ -53,3 +53,7 @@ data class TimeoutMessage(val msg: String, val direction: Direction) : ServerMes
 @Serializable
 @SerialName("die")
 data class DieMessage(val msg: String) : ServerMessage()
+
+@Serializable
+@SerialName("gameOver")
+data class GameOverMessage(val winnerColor: Byte, val msg: String) : ServerMessage()

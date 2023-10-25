@@ -4,6 +4,7 @@ import hu.bme.aut.tron.api.BikeInfo
 import hu.bme.aut.tron.api.Direction
 import hu.bme.aut.tron.api.Position
 import hu.bme.aut.tron.api.Settings
+import hu.bme.aut.tron.helpers.isInside
 import kotlin.random.Random
 
 class Game(
@@ -38,7 +39,7 @@ class Game(
             do {
                 x = Random.nextInt(settings.mapSize.x)
                 y = Random.nextInt(settings.mapSize.y)
-            } while (map[x-1][y-1] != 0.toByte())
+            } while (map[x][y] != 0.toByte())
 
             Bike(
                 it,
@@ -47,43 +48,49 @@ class Game(
         }
     }
 
-    suspend fun playGame() {
+    suspend fun playGame(): Byte {
         handleRoutes()
 
-        while(bikes.all { it.isAlive }){
+        var playing = true
+        while(playing){
             bikes.filter { it.isAlive }.forEach { bike ->
-                val dir = bike.requestStep(settings.turnTimeLimit)
-                stepPlayer(bike, dir)
-                handleRoutes()
+                if (bikes.filter { it.isAlive }.size > 1) {
+                    val dir = bike.requestStep(settings.turnTimeLimit)
+                    stepPlayer(bike, dir)
+                    handleRoutes()
+                } else {
+                    playing = false
+                }
             }
         }
+
+        return bikes.find { it.isAlive }!!.getColor()
     }
 
     private suspend fun handleRoutes() {
-        val bikeRoutes = bikes.map { BikeInfo(it.isAlive, it.route) }
+        val bikeRoutes = bikes.map { BikeInfo(it.getColor(), it.isAlive, it.route) }
         bikes.forEach { it.sendUpdate(map, bikeRoutes) }
     }
 
     private suspend fun stepPlayer(bike: Bike, dir: Direction) {
-        //TODO: Index 63 out of bounds for length 63
         var x = bike.position.x
         var y = bike.position.y
         when (dir) {
             Direction.UP -> {
-                x--
-            }
-            Direction.DOWN -> {
-                x++
-            }
-            Direction.LEFT -> {
-                y--
-            }
-            Direction.RIGHT -> {
                 y++
             }
+            Direction.DOWN -> {
+                y--
+            }
+            Direction.LEFT -> {
+                x--
+            }
+            Direction.RIGHT -> {
+                x++
+            }
         }
-        if (map[x-1][y-1] == 0.toByte()) {
-            map[x-1][y-1] = bike.getColor()
+        if (map.isInside(x,y) && map[x][y] == 0.toByte()) {
+            map[x][y] = bike.getColor()
             bike.moveTo(x,y)
         } else {
             bike.collide()
