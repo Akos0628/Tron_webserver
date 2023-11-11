@@ -1,11 +1,14 @@
 package hu.bme.aut.tron.logic
 
-import hu.bme.aut.tron.api.BikeInfo
-import hu.bme.aut.tron.api.Direction
-import hu.bme.aut.tron.api.Position
-import hu.bme.aut.tron.api.Settings
+import hu.bme.aut.tron.api.*
 import hu.bme.aut.tron.helpers.isInside
+import java.text.SimpleDateFormat
+import java.util.*
 import kotlin.random.Random
+
+const val POINTS_FOR_LAST_ALIVE = 1000
+const val POINTS_FOR_KILLS = 300
+const val POINTS_FOR_CELLS = 5
 
 class Game(
     players: List<Player>,
@@ -64,6 +67,18 @@ class Game(
             }
         }
 
+        val current = SimpleDateFormat("yyyy-MM-dd HH:mm").format(Calendar.getInstance().time)
+
+        val gameLeaderboard = bikes.map {
+            BoardRecord(
+                name = it.getDriverName(),
+                score = it.getScore(),
+                date = current,
+                numOfEnemies = bikes.size-1
+            )
+        }
+        //TODO: Save leaderboard
+
         return bikes.find { it.isAlive }!!.getColor()
     }
 
@@ -89,10 +104,22 @@ class Game(
                 x++
             }
         }
-        if (map.isInside(x,y) && map[x][y] == 0.toByte()) {
-            map[x][y] = bike.getColor()
-            bike.moveTo(x,y)
-        } else {
+        if (map.isInside(x,y)) {
+            val nextCell = map[x][y]
+            if (nextCell == 0.toByte()) {   // Üres cellára lép
+                bike.moveTo(x,y)
+                map[x][y] = bike.getColor()
+            } else if (nextCell == 1.toByte()) {    // Falra lép
+                bike.collide()
+            } else if (map[x][y] == bike.getColor()) {  // Saját cellára
+                bike.collide()
+            } else {    // Más cellájára
+                val killer = bikes.find { it.getColor() == map[x][y] }!!
+                killer.kills++
+
+                bike.collide()
+            }
+        } else {    // Pályán kívül
             bike.collide()
         }
     }

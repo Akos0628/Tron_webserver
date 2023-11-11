@@ -6,8 +6,6 @@ import kotlinx.serialization.Serializable
 data class BoardRecord(
     val name: String,
     val score: Int,
-    val date: Long,
-    val numPlayers: Int,
-    val numBots: Int,
-    val difficulty: String
+    val date: String,
+    val numOfEnemies: Int
 )

@@ -8,11 +8,7 @@ class Bot(
     private var map: List<List<Byte>>,
     name: String,
     colorId: Byte
-) : Character(name, colorId) {
-    init {
-        ready = true
-    }
-
+) : Driver(name, colorId) {
     override suspend fun move(x: Int, y: Int, timeout: Long): Direction {
         return (listOf(UP, RIGHT, DOWN, LEFT).random())
     }

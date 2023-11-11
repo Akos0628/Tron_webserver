@@ -5,12 +5,14 @@ import hu.bme.aut.tron.api.Direction
 import hu.bme.aut.tron.api.Position
 
 class Bike(
-    private var driver: Character,
+    private var driver: Driver,
     var position: Position
-){
+) {
     val route: MutableList<Position> = mutableListOf()
     var isAlive = true
         private set
+
+    var kills = 0
 
     init {
         route += position
@@ -31,5 +33,20 @@ class Bike(
 
     fun getColor(): Byte {
         return driver.colorId
+    }
+
+    fun getDriverName(): String {
+        return driver.name
+    }
+
+    private fun aliveAsNum() = when(isAlive){
+        true -> 1
+        false -> 0
+    }
+
+    fun getScore(): Int {
+        return POINTS_FOR_CELLS * route.size +
+                POINTS_FOR_KILLS * kills +
+                POINTS_FOR_LAST_ALIVE * aliveAsNum()
     }
 }

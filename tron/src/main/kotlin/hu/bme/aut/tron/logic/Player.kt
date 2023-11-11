@@ -10,7 +10,8 @@ class Player(
     name: String,
     colorId: Byte,
     private val session: DefaultWebSocketServerSession
-) : Character(name, colorId) {
+) : Driver(name, colorId) {
+    public var ready = false
     private var routes: List<BikeInfo> = emptyList()
     private var stepMessageQueue = MutableSharedFlow<StepMessage>()
     suspend fun push(message: StepMessage) {

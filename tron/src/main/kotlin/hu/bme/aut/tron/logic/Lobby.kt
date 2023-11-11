@@ -12,7 +12,9 @@ import kotlin.time.Duration
 
 const val COUNT_DOWN_SEC = 3
 const val MAX_PLAYER_LIMIT = 4
+const val MIN_HEIGHT = 20
 const val MAX_HEIGHT = 64
+const val MIN_WIDTH = 36
 const val MAX_WIDTH = 114
 const val TURN_LIMIT = "1s"
 
@@ -26,7 +28,7 @@ class Lobby(val id: String) {
         bots = emptyList(),
         mapSize = Position(MAX_WIDTH, MAX_HEIGHT)
     )
-    private var availableColors = (1..10).map { it.toByte() }.toMutableList()
+    private var availableColors = (2..10).map { it.toByte() }.toMutableList()
 
     private lateinit var gameMap: List<List<Byte>>
     private lateinit var leader: DefaultWebSocketServerSession
@@ -133,7 +135,7 @@ class Lobby(val id: String) {
             initiator.sendMessage(BadMessage("The number of joined players (${players.size}) and the number of bots (${settings.bots.size}) exceeds the player limit (${settings.playerLimit})"))
         } else if (settings.turnTimeLimit < 1) {
             initiator.sendMessage(BadMessage("The time limit is too low"))
-        } else if (settings.mapSize.x < 20 || settings.mapSize.y < 36) {
+        } else if (settings.mapSize.x < MIN_HEIGHT || settings.mapSize.y < MIN_WIDTH) {
             initiator.sendMessage(BadMessage("Map size is too small"))
         } else if (settings.mapSize.x > MAX_HEIGHT || settings.mapSize.y > MAX_WIDTH) {
             initiator.sendMessage(BadMessage("Map size is too big"))
@@ -165,8 +167,9 @@ class Lobby(val id: String) {
                 delay(1000L)
             }
 
-            players.forEach { (session, _) ->
+            players.forEach { (session, player) ->
                 session.sendMessage(StartMessage())
+                player.ready = false
             }
             launch {
                 val game = Game(
