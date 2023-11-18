@@ -77,9 +77,16 @@ fun Application.configureSockets() {
                 } catch (e: Exception) {
                     println(e.localizedMessage)
                 } finally {
+                    try {
+                        session.sendMessage(LeavingMessage("Disconnecting from the lobby"))
+                    } catch (ex: Exception) {
+                        println("session already closed")
+                    }
                     println("Removing $session!")
                     lobby.disconnect(session)
                 }
+            } else {
+                this.sendMessage(BadMessage("Not existing lobby"))
             }
         }
     }
