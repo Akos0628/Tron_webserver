@@ -37,7 +37,7 @@ fun Application.configureRouting() {
                 val id = call.parameters["id"]!!
                 call.respond(LobbyService.getLobby(id)!!.visibility)
             }
-            post("/create") {
+            get("/new") {
                 call.respondText { LobbyService.createNewLobby() }
             }
         }
