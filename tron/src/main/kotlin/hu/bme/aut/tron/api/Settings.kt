@@ -7,6 +7,5 @@ data class Settings(
     val timeLimit: Long? = null,
     val turnTimeLimit: Long,
     val playerLimit: Int,
-    val bots: List<RobotSettings>,
-    val mapSize: Position
+    val bots: List<RobotSettings>
 )

@@ -1,13 +1,11 @@
 package hu.bme.aut.tron.plugins
 
-import hu.bme.aut.tron.api.BoardRecord
 import hu.bme.aut.tron.api.Leaderboard
+import hu.bme.aut.tron.service.FirebaseDb
 import hu.bme.aut.tron.service.LobbyService
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import java.text.SimpleDateFormat
-import java.util.*
 
 fun Application.configureRouting() {
     routing {
@@ -25,32 +23,9 @@ fun Application.configureRouting() {
         get("/leaderboard") {
             call.respond(
                 Leaderboard(
-                    listOf(
-                        BoardRecord(
-                            name = "Anna",
-                            score = 100,
-                            date = SimpleDateFormat("yyyy-MM-dd HH:mm").format(Calendar.getInstance().time),
-                            numOfEnemies = 3
-                        ),
-                        BoardRecord(
-                            name = "Boti",
-                            score = 90,
-                            date = SimpleDateFormat("yyyy-MM-dd HH:mm").format(Calendar.getInstance().time),
-                            numOfEnemies = 3
-                        ),
-                        BoardRecord(
-                            name = "Tomi",
-                            score = 80,
-                            date = SimpleDateFormat("yyyy-MM-dd HH:mm").format(Calendar.getInstance().time),
-                            numOfEnemies = 2
-                        ),
-                        BoardRecord(
-                            name = "Ákos",
-                            score = 70,
-                            date = SimpleDateFormat("yyyy-MM-dd HH:mm").format(Calendar.getInstance().time),
-                            numOfEnemies = 1
-                        )
-                    )
+                    FirebaseDb.getBoard().sortedByDescending {
+                        it.score
+                    }
                 )
             )
         }

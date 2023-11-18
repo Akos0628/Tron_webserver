@@ -2,6 +2,7 @@ package hu.bme.aut.tron.logic
 
 import hu.bme.aut.tron.api.*
 import hu.bme.aut.tron.helpers.isInside
+import hu.bme.aut.tron.service.LeaderBoardService
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.random.Random
@@ -40,8 +41,8 @@ class Game(
             var y: Int
 
             do {
-                x = Random.nextInt(settings.mapSize.x)
-                y = Random.nextInt(settings.mapSize.y)
+                x = Random.nextInt(WIDTH)
+                y = Random.nextInt(HEIGHT)
             } while (map[x][y] != 0.toByte())
 
             Bike(
@@ -77,7 +78,8 @@ class Game(
                 numOfEnemies = bikes.size-1
             )
         }
-        //TODO: Save leaderboard
+        println(gameLeaderboard)
+        LeaderBoardService.updateBoardWith(gameLeaderboard)
 
         return bikes.find { it.isAlive }!!.getColor()
     }

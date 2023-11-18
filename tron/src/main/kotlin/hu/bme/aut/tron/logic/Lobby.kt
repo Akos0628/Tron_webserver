@@ -12,10 +12,8 @@ import kotlin.time.Duration
 
 const val COUNT_DOWN_SEC = 3
 const val MAX_PLAYER_LIMIT = 4
-const val MIN_HEIGHT = 20
-const val MAX_HEIGHT = 64
-const val MIN_WIDTH = 36
-const val MAX_WIDTH = 114
+const val HEIGHT = 25
+const val WIDTH = 45
 const val TURN_LIMIT = "1s"
 
 class Lobby(val id: String) {
@@ -25,8 +23,7 @@ class Lobby(val id: String) {
     private var gameSettings = Settings(
         playerLimit = 2,
         turnTimeLimit = Duration.parse(TURN_LIMIT).inWholeMilliseconds,
-        bots = emptyList(),
-        mapSize = Position(MAX_WIDTH, MAX_HEIGHT)
+        bots = emptyList()
     )
     private var availableColors = (2..10).map { it.toByte() }.toMutableList()
 
@@ -44,8 +41,8 @@ class Lobby(val id: String) {
         gameMap = generateSequence {
             generateSequence {
                 (0).toByte()
-            }.take(gameSettings.mapSize.y).toList()
-        }.take(gameSettings.mapSize.x).toList()
+            }.take(HEIGHT).toList()
+        }.take(WIDTH).toList()
 
         // Innentől ne változtass
         players.forEach { (session, _) ->
@@ -135,19 +132,11 @@ class Lobby(val id: String) {
             initiator.sendMessage(BadMessage("The number of joined players (${players.size}) and the number of bots (${settings.bots.size}) exceeds the player limit (${settings.playerLimit})"))
         } else if (settings.turnTimeLimit < 1) {
             initiator.sendMessage(BadMessage("The time limit is too low"))
-        } else if (settings.mapSize.x < MIN_HEIGHT || settings.mapSize.y < MIN_WIDTH) {
-            initiator.sendMessage(BadMessage("Map size is too small"))
-        } else if (settings.mapSize.x > MAX_HEIGHT || settings.mapSize.y > MAX_WIDTH) {
-            initiator.sendMessage(BadMessage("Map size is too big"))
         } else {
-            val previousMapSize = gameSettings.mapSize
             gameSettings = settings
             players.forEach { (session, _) ->
                 session.sendMessage(SettingsChangedMessage(gameSettings))
             }
-
-            if (previousMapSize != gameSettings.mapSize)
-                generateNewMap()
         }
     }
 
@@ -190,7 +179,6 @@ class Lobby(val id: String) {
                         session.sendMessage(GameOverMessage(winnerId, "${winner.name} won!"))
                     }
                 }
-                //TODO: Store the data to the leaderboard
                 delay(10000L)
 
                 status = LobbyStatus.WAITING

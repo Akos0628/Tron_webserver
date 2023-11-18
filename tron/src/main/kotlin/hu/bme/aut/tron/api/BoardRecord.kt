@@ -8,4 +8,6 @@ data class BoardRecord(
     val score: Int,
     val date: String,
     val numOfEnemies: Int
-)
+) {
+    constructor(): this("", -1, "", -1)
+}
