@@ -3,7 +3,6 @@ package hu.bme.aut.tron.plugins
 import hu.bme.aut.tron.api.Leaderboard
 import hu.bme.aut.tron.service.FirebaseDb
 import hu.bme.aut.tron.service.LobbyService
-import hu.bme.aut.tron.service.test
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
