@@ -22,11 +22,10 @@ def hello_world():
 def step(map):
     #convert the map to a list of ints
     map = map.split(',')
-    submap = np.array([[map[0], map[1], map[2]],
-                [map[3], map[4], map[5]],
-                [map[6], map[7], map[8]]])
+    submap = np.array([[int(map[0]), int(map[1]), int(map[2])],
+                       [int(map[3]), int(map[4]), int(map[5])],
+                       [int(map[6]), int(map[7]), int(map[8])]])
 
-    submap[submap != '0'] = 1
     #get the next step
     step = bike.step(submap)
     return str(step)

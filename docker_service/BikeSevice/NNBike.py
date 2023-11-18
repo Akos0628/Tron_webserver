@@ -59,7 +59,7 @@ class NNBike():
 
         #predict the next step
         step = self.predict(m)
-
+        print(step)
         step = np.argmax(step)
 
         return step
