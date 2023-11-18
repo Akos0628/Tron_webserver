@@ -3,6 +3,11 @@ package hu.bme.aut.tron.plugins
 import hu.bme.aut.tron.api.Leaderboard
 import hu.bme.aut.tron.service.FirebaseDb
 import hu.bme.aut.tron.service.LobbyService
+import hu.bme.aut.tron.service.test
+import io.ktor.client.*
+import io.ktor.client.call.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.request.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -29,6 +34,32 @@ fun Application.configureRouting() {
                 )
             )
         }
+        get("/test") {
+            val client = HttpClient(CIO)
+            val response = client.get("http://localhost:5000/step/0,1,0,0,1,0,0,0,0")
+            call.respond(response.body<Int>())
+            client.close()
+        }
+        //get("/leaderboardChange") {
+        //    call.respond(
+        //        FirebaseDb.setBoard(
+        //            listOf(
+        //                BoardRecord(
+        //                    name = "akos",
+        //                    score = 0,
+        //                    date = "2023-11-18 22:33",
+        //                    numOfEnemies = 0
+        //                ),
+        //                BoardRecord(
+        //                    name = "akos2",
+        //                    score = 100,
+        //                    date = "2023-11-18 22:33",
+        //                    numOfEnemies = 1
+        //                )
+        //            )
+        //        )
+        //    )
+        //}
         route("/lobbies") {
             get {
                 call.respond(LobbyService.getAllOpen().map { it.id })
