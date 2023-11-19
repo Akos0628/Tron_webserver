@@ -34,10 +34,11 @@ fun Application.configureRouting() {
                 )
             )
         }
-        post("/test") {
+        get("/test/{matrix}") {
+            val matrix = call.parameters["matrix"]!!
+            println(matrix)
             val client = HttpClient(CIO)
-            val url = call.receiveText()
-            val response = client.get(url)
+            val response = client.get("http://localhost:5000/step/$matrix")
             call.respond(response.body<String>())
             client.close()
         }
