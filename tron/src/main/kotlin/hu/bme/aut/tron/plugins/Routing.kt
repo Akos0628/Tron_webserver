@@ -34,11 +34,11 @@ fun Application.configureRouting() {
                 )
             )
         }
-        get("/test") {
+        post("/test") {
             val client = HttpClient(CIO)
             val url = call.receiveText()
             val response = client.get(url)
-            call.respond(response.body<Int>())
+            call.respond(response.body<String>())
             client.close()
         }
         //get("/leaderboardChange") {
