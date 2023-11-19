@@ -8,6 +8,7 @@ import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.request.*
 import io.ktor.server.application.*
+import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
@@ -35,7 +36,8 @@ fun Application.configureRouting() {
         }
         get("/test") {
             val client = HttpClient(CIO)
-            val response = client.get("http://localhost:5000/step/0,1,0,0,1,0,0,0,0")
+            val url = call.receiveText()
+            val response = client.get(url)
             call.respond(response.body<Int>())
             client.close()
         }
