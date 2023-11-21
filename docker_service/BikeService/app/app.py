@@ -2,9 +2,6 @@ from flask import Flask
 import NNBike
 import QBike
 import numpy as np
-import pip
-import sys
-
 
 
 app = Flask(__name__)
@@ -12,7 +9,7 @@ app = Flask(__name__)
 nnbike = NNBike.NNBike()
 nnbike.load_model('model_jo.h5')
 
-qbike = QBike()
+qbike = QBike.QBike()
 qbike.load_model("QLearningV4(Hard).Qtable")
 
 @app.route('/')
@@ -37,9 +34,9 @@ def nnstep(map):
 def qstep(map):
     #convert the map to a list of ints
     map = map.split(',')
-    submap = np.array([[int(map[0]), int(map[1]), int(map[2])],
-                       [int(map[3]), int(map[4]), int(map[5])],
-                       [int(map[6]), int(map[7]), int(map[8])]])
+    submap = np.array([int(map[0]), int(map[1]), int(map[2]),
+                       int(map[3]), int(map[4]), int(map[5]),
+                       int(map[6]), int(map[7]), int(map[8])])
 
     #get the next step
     step = qbike.step(submap)

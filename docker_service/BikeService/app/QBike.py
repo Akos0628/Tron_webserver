@@ -75,7 +75,7 @@ class QBike:
 		state = tuple(1 if item != 0 else 0 for item in state)
 		return np.argmax(self.Q_table[state])
 
-	
+
 	def load_model(self, path):
 		with open(path, 'rb') as f:
 			self.Q_table = pickle.load(f)
