@@ -1,6 +1,7 @@
 package hu.bme.aut.tron.plugins
 
 import hu.bme.aut.tron.api.Leaderboard
+import hu.bme.aut.tron.service.Config
 import hu.bme.aut.tron.service.FirebaseDb
 import hu.bme.aut.tron.service.LobbyService
 import io.ktor.client.*
@@ -34,11 +35,27 @@ fun Application.configureRouting() {
                 )
             )
         }
-        get("/test/{matrix}") {
+        get("/bots") {
             val matrix = call.parameters["matrix"]!!
             println(matrix)
             val client = HttpClient(CIO)
-            val response = client.get("http://localhost:5000/step/$matrix")
+            val response = client.get("${Config.requireProperty("ktor.bots.serverAddress")}get_bike_models")
+            call.respond(response.body<List<String>>())
+            client.close()
+        }
+        get("/test/nn/{matrix}") {
+            val matrix = call.parameters["matrix"]!!
+            println(matrix)
+            val client = HttpClient(CIO)
+            val response = client.get("${Config.requireProperty("ktor.bots.serverAddress")}nnstep/$matrix")
+            call.respond(response.body<String>())
+            client.close()
+        }
+        get("/test/q/{matrix}") {
+            val matrix = call.parameters["matrix"]!!
+            println(matrix)
+            val client = HttpClient(CIO)
+            val response = client.get("${Config.requireProperty("ktor.bots.serverAddress")}qstep/$matrix")
             call.respond(response.body<String>())
             client.close()
         }
