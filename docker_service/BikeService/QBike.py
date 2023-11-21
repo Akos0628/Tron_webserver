@@ -1,6 +1,7 @@
 import random
 import numpy as np
 import pickle
+import GameEnv
 
 UP = 0
 LEFT = 1
@@ -24,7 +25,7 @@ class QBike:
 		self.exploration_prob_min = 0.01
 		self.num_episodes = 10000
 		self.score = []
-		#self.env = None
+		self.env = None
 		self.randstep = False
 		print('BikeAgent init')
 
@@ -38,8 +39,7 @@ class QBike:
 			return np.argmax(self.Q_table[state])
 		
 	def get_state(self):
-		#state = self.env.get_map_around(self.x, self.y)
-		#print(state)
+		state = self.env.get_map_around(self.x, self.y)
 		if(state[4] > 0):
 			self.isalive= False
 		state = tuple(1 if item != 0 else 0 for item in state)
@@ -86,8 +86,9 @@ class QBike:
 			self.x = random.randint(1, 24)
 			self.y= random.randint(1, 44)
 			self.prev_reward  = 0			#also length
-			#self.env  = GameEnv.GameEnv()
+			self.env  = GameEnv.GameEnv()
 			self.isalive=True
+
             # print updates
 			if i % 25 == 0:
 				print(f"Episodes: {i}, score: {np.mean(self.score)}, eps: {self.exploration_prob}, lr: {self.learning_rate}")
@@ -111,7 +112,7 @@ class QBike:
 					* (reward + self.discount_factor * max(self.Q_table[next_state])) 
 				current_state = next_state
 				self.state = current_state
-				#self.env.update_map(self, action)
+				self.env.update_map(self, action)
 			if not self.isalive:
 				print(i,"\tDead in: ", self.prev_reward, " steps")
             # keep track of important metrics
@@ -121,7 +122,7 @@ class QBike:
 		for i in range(1, self.num_episodes + 1):
 			self.x = random.randint(1, 24)
 			self.y= random.randint(1, 44)
-			#self.env  = GameEnv.GameEnv()
+			self.env  = GameEnv.GameEnv()
 			self.isalive=True
 			current_state = self.get_state()
 			while self.isalive:
@@ -131,4 +132,4 @@ class QBike:
 				next_state = self.get_next_state(action)
 				current_state = next_state
 				self.state = current_state
-				#self.env.update_map(self, action)
+				self.env.update_map(self, action)
