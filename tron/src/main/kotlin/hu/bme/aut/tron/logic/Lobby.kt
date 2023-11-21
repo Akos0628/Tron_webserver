@@ -1,13 +1,16 @@
 package hu.bme.aut.tron.logic
 
 import hu.bme.aut.tron.api.*
+import hu.bme.aut.tron.helpers.EASY
+import hu.bme.aut.tron.helpers.HARD
 import hu.bme.aut.tron.helpers.sendMessage
+import hu.bme.aut.tron.plugins.client
+import hu.bme.aut.tron.service.Config
 import hu.bme.aut.tron.service.LobbyService
+import io.ktor.client.call.*
+import io.ktor.client.request.*
 import io.ktor.server.websocket.*
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import kotlin.time.Duration
 
 const val COUNT_DOWN_SEC = 3
@@ -29,20 +32,33 @@ class Lobby(val id: String) {
 
     private lateinit var gameMap: List<List<Byte>>
     private lateinit var leader: DefaultWebSocketServerSession
+    private var availableBots: List<String>
 
     init {
         runBlocking {
+            val botTypesResponse = async { client().get("${Config.requireProperty("ktor.bots.serverAddress")}get_bike_models") }
             generateNewMap()
+            availableBots = botTypesResponse.await().body<List<String>>().plus(listOf(EASY, HARD))
         }
     }
 
     suspend fun generateNewMap() {
         // Ide kell a pálya generálást megvalósítani
-        gameMap = generateSequence {
-            generateSequence {
-                (0).toByte()
-            }.take(HEIGHT).toList()
-        }.take(WIDTH).toList()
+        val newMap = mutableListOf<List<Byte>>()
+        for (x in (1..WIDTH)) {
+            val column = mutableListOf<Byte>()
+            for (y in (1..HEIGHT)) {
+                if (x == 1 || x == WIDTH) {
+                    column.add(1)
+                } else if (y == 1 || y == HEIGHT) {
+                    column.add(1)
+                } else {
+                    column.add(0)
+                }
+            }
+            newMap.add(column)
+        }
+        gameMap = newMap
 
         // Innentől ne változtass
         players.forEach { (session, _) ->
@@ -56,12 +72,12 @@ class Lobby(val id: String) {
         } else if(players.isEmpty()) {
             leader = id
             players += (id to player)
-            id.sendMessage(SettingsChangedMessage(gameSettings))
+            id.sendMessage(SettingsChangedMessage(gameSettings, availableBots))
             id.sendMessage(MapMessage(gameMap))
             sendLobbyPlayers()
         } else if(players.count() + gameSettings.bots.size < gameSettings.playerLimit) {
             players += (id to player)
-            id.sendMessage(SettingsChangedMessage(gameSettings))
+            id.sendMessage(SettingsChangedMessage(gameSettings, availableBots))
             id.sendMessage(MapMessage(gameMap))
             sendLobbyPlayers()
         } else {
@@ -135,7 +151,7 @@ class Lobby(val id: String) {
         } else {
             gameSettings = settings
             players.forEach { (session, _) ->
-                session.sendMessage(SettingsChangedMessage(gameSettings))
+                session.sendMessage(SettingsChangedMessage(gameSettings, availableBots))
             }
         }
     }
@@ -165,18 +181,19 @@ class Lobby(val id: String) {
                     players.values.toList(),
                     gameSettings,
                     gameMap,
-                    availableColors
+                    availableColors,
+                    availableBots
                 )
-                val winnerId = game.playGame()
+                val gameBoard = game.playGame()
+                val winnerName = gameBoard[0].name
                 status = LobbyStatus.FINISHED
 
-                val winner = players.values.find { it.colorId == winnerId }!!
                 players.forEach { (session, player) ->
-                    if (player.colorId == winnerId) {
-                        session.sendMessage(GameOverMessage(winnerId, "You won!"))
+                    if (player.name == winnerName) {
+                        session.sendMessage(GameOverMessage("You won!", Leaderboard(gameBoard)))
                     } else {
 
-                        session.sendMessage(GameOverMessage(winnerId, "${winner.name} won!"))
+                        session.sendMessage(GameOverMessage("$winnerName won!", Leaderboard(gameBoard)))
                     }
                 }
                 delay(10000L)

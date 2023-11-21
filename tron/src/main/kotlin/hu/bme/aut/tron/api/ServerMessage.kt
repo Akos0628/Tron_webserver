@@ -20,7 +20,7 @@ data class MapMessage(val map: List<List<Byte>>) : ServerMessage()
 
 @Serializable
 @SerialName("settingsChanged")
-data class SettingsChangedMessage(val settings: Settings) : ServerMessage()
+data class SettingsChangedMessage(val settings: Settings, val availableBots: List<String>) : ServerMessage()
 
 @Serializable
 @SerialName("full")
@@ -56,4 +56,4 @@ data class DieMessage(val msg: String) : ServerMessage()
 
 @Serializable
 @SerialName("gameOver")
-data class GameOverMessage(val winnerColor: Byte, val msg: String) : ServerMessage()
+data class GameOverMessage(val msg: String, val gameBoard: Leaderboard) : ServerMessage()

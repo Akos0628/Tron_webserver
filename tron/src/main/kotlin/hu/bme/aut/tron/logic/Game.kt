@@ -1,6 +1,8 @@
 package hu.bme.aut.tron.logic
 
 import hu.bme.aut.tron.api.*
+import hu.bme.aut.tron.helpers.EASY
+import hu.bme.aut.tron.helpers.HARD
 import hu.bme.aut.tron.helpers.isInside
 import hu.bme.aut.tron.service.LeaderBoardService
 import java.text.SimpleDateFormat
@@ -15,7 +17,8 @@ class Game(
     players: List<Player>,
     private val settings: Settings,
     originalMap: List<List<Byte>>,
-    availableColors: List<Byte>
+    availableColors: List<Byte>,
+    botTypes: List<String>
 ) {
     private val bikes: List<Bike>
     private var map: MutableList<MutableList<Byte>> = mutableListOf()
@@ -29,11 +32,16 @@ class Game(
             val color = colors.random()
             colors -= color
 
-            Bot(
-                map,
-                "bot${botNameId++}",
-                color
-            )
+            when(it.type) {
+                HARD -> HardBot(map,"hard bot${botNameId++}", color)
+                EASY -> EasyBot(map,"easy bot${botNameId++}", color)
+                else -> if (botTypes.contains(it.type)) {
+                    BotClient(map,"${it.type} bot${botNameId++}", color, it.type)
+                } else {
+                    EasyBot(map,"easy bot${botNameId++}", color)
+                }
+            }
+
         }
 
         bikes = (players + bots).map {
@@ -52,7 +60,7 @@ class Game(
         }
     }
 
-    suspend fun playGame(): Byte {
+    suspend fun playGame(): List<BoardRecord> {
         handleRoutes()
 
         var playing = true
@@ -77,11 +85,13 @@ class Game(
                 date = current,
                 numOfEnemies = bikes.size-1
             )
+        }.sortedByDescending {
+            it.score
         }
         println(gameLeaderboard)
         LeaderBoardService.updateBoardWith(gameLeaderboard)
 
-        return bikes.find { it.isAlive }!!.getColor()
+        return gameLeaderboard
     }
 
     private suspend fun handleRoutes() {
