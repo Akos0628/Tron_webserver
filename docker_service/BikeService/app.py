@@ -22,7 +22,7 @@ def hello_world():
 
 #define a function that takes a map and returns the next step
 @app.route('/nnstep/<map>')
-def step(map):
+def nnstep(map):
     #convert the map to a list of ints
     map = map.split(',')
     submap = np.array([[int(map[0]), int(map[1]), int(map[2])],
@@ -34,7 +34,7 @@ def step(map):
     return str(step)
 
 @app.route('/qstep/<map>')
-def step(map):
+def qstep(map):
     #convert the map to a list of ints
     map = map.split(',')
     submap = np.array([[int(map[0]), int(map[1]), int(map[2])],
@@ -44,6 +44,10 @@ def step(map):
     #get the next step
     step = qbike.step(submap)
     return str(step)
+
+@app.route('/get_bike_models')
+def get_bike_models():
+    return ["nnstep", "qstep"]
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
