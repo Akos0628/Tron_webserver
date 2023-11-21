@@ -31,12 +31,9 @@ class QBike:
 	def choose_action(self, state):
 		if random.uniform(0, 1) < self.exploration_prob:
 			action = random.choice(range(self.num_actions))
-			#print("RandStep: ", action)
 			self.randstep = True
 			return action 
 		else:
-			#print("State:\t", state)
-			#print("QStep: ", self.Q_table[state])
 			self.randstep = False
 			return np.argmax(self.Q_table[state])
 		
@@ -48,24 +45,22 @@ class QBike:
 		state = tuple(1 if item != 0 else 0 for item in state)
 		return state
 
-	# Define the game environment, state transition, and reward functions.
 	def get_next_state(self, action):
-    	# Implement logic to determine the next state based on the action.
+    	#Logic to determine the next state based on the action.
 		self.x, self.y
-		match action:
-			case 0:		#UP
-				self.y = self.y + 1
-			case 1:		#LEFT
-				self.x = self.x - 1
-			case 2:		#DOWN
-				self.y = self.y - 1
-			case _:		#RIGHT
-				self.x = self.x + 1
+		if  action == 0:  	# UP
+			self.y = self.y + 1
+		elif action == 1:  	# LEFT
+			self.x = self.x - 1
+		elif action == 2:  	# DOWN
+			self.y = self.y - 1
+		else: 				# RIGHT
+			self.x = self.x + 1
 		return self.get_state()
 
 	
 	def get_reward(self):
-    	# Implement logic to calculate the reward for the action.
+    	# Logic to calculate the reward for the action.
 		if not self.isalive:
 			return -20
 		else:
