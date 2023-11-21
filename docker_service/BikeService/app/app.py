@@ -46,5 +46,13 @@ def qstep(map):
 def get_bike_models():
     return ["nnstep", "qstep"]
 
+@app.route('/health')
+def health():
+    return '', 200
+
+@app.route('/ready')
+def ready():
+    return '', 200
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0')

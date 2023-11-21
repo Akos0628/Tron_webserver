@@ -6,11 +6,20 @@ import hu.bme.aut.tron.service.FirebaseDb
 import hu.bme.aut.tron.service.LobbyService
 import io.ktor.client.*
 import io.ktor.client.call.*
-import io.ktor.client.engine.cio.*
+import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
+import io.ktor.http.*
+import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+
+
+val client = HttpClient {
+    install(ContentNegotiation) {
+        json()
+    }
+}
 
 fun Application.configureRouting() {
     routing {
@@ -35,28 +44,26 @@ fun Application.configureRouting() {
             )
         }
         get("/bots") {
-            val matrix = call.parameters["matrix"]!!
-            println(matrix)
-            val client = HttpClient(CIO)
-            val response = client.get("${Config.requireProperty("ktor.bots.serverAddress")}get_bike_models")
-            call.respond(response.body<List<String>>())
-            client.close()
+            val response = client.get("${Config.requireProperty("ktor.bots.serverAddress")}get_bike_models") {
+                accept(ContentType.Application.Json)
+            }
+
+            val list: List<String> = response.body()
+            call.respond(list)
         }
         get("/test/nn/{matrix}") {
             val matrix = call.parameters["matrix"]!!
             println(matrix)
-            val client = HttpClient(CIO)
+
             val response = client.get("${Config.requireProperty("ktor.bots.serverAddress")}nnstep/$matrix")
             call.respond(response.body<String>())
-            client.close()
         }
         get("/test/q/{matrix}") {
             val matrix = call.parameters["matrix"]!!
             println(matrix)
-            val client = HttpClient(CIO)
+
             val response = client.get("${Config.requireProperty("ktor.bots.serverAddress")}qstep/$matrix")
             call.respond(response.body<String>())
-            client.close()
         }
         //get("/leaderboardChange") {
         //    call.respond(
