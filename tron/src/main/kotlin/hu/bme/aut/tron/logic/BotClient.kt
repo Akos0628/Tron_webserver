@@ -41,15 +41,15 @@ class BotClient(
 
     private fun transformMap(x: Int, y: Int): List<Int> {
         return listOf(
-            map[x-1][y-1],
-            map[x][y-1],
-            map[x+1][y-1],
-            map[x-1][y],
-            map[x][y],
-            map[x+1][y],
-            map[x-1][y+1],
-            map[x][y+1],
-            map[x+1][y+1],
+            map[y-1][x-1],
+            map[y-1][x],
+            map[y-1][x+1],
+            map[y][x-1],
+            map[y][x],
+            map[y][x+1],
+            map[y+1][x-1],
+            map[y+1][x],
+            map[y+1][x+1],
         ).map { it.asCell() }
     }
 

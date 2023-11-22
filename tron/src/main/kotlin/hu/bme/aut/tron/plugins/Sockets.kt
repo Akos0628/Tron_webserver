@@ -61,14 +61,6 @@ fun Application.configureSockets() {
                                     else -> session.sendMessage(BadMessage(WRONG_MESSAGE))
                                 }
                             }
-                            LobbyStatus.FINISHED -> {
-                                when (clientMessage) {
-                                    is LeaveMessage -> {
-                                        joined = false
-                                    }
-                                    else -> session.sendMessage(BadMessage(WRONG_MESSAGE))
-                                }
-                            }
                         }
                     }
 

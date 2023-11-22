@@ -21,7 +21,7 @@ class Game(
     botTypes: List<String>
 ) {
     private val bikes: List<Bike>
-    private var map: MutableList<MutableList<Byte>> = mutableListOf()
+    private var map: List<MutableList<Byte>> = listOf()
 
     init {
         map = originalMap.map { it.toMutableList() }.toMutableList()
@@ -51,7 +51,7 @@ class Game(
             do {
                 x = Random.nextInt(WIDTH)
                 y = Random.nextInt(HEIGHT)
-            } while (map[x][y] != 0.toByte())
+            } while (map[y][x] != 0.toByte())
 
             Bike(
                 it,
@@ -123,10 +123,10 @@ class Game(
                 map[x][y] = bike.getColor()
             } else if (nextCell == 1.toByte()) {    // Falra lép
                 bike.collide()
-            } else if (map[x][y] == bike.getColor()) {  // Saját cellára
+            } else if (map[y][x] == bike.getColor()) {  // Saját cellára
                 bike.collide()
             } else {    // Más cellájára
-                val killer = bikes.find { it.getColor() == map[x][y] }!!
+                val killer = bikes.find { it.getColor() == map[y][x] }!!
                 killer.kills++
 
                 bike.collide()

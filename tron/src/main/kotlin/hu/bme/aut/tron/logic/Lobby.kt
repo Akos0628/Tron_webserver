@@ -7,6 +7,7 @@ import hu.bme.aut.tron.helpers.sendMessage
 import hu.bme.aut.tron.plugins.client
 import hu.bme.aut.tron.service.Config
 import hu.bme.aut.tron.service.LobbyService
+import hu.bme.aut.tron.service.MapGenerator
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.server.websocket.*
@@ -43,24 +44,8 @@ class Lobby(val id: String) {
     }
 
     suspend fun generateNewMap() {
-        // Ide kell a pálya generálást megvalósítani
-        val newMap = mutableListOf<List<Byte>>()
-        for (x in (1..WIDTH)) {
-            val column = mutableListOf<Byte>()
-            for (y in (1..HEIGHT)) {
-                if (x == 1 || x == WIDTH) {
-                    column.add(1)
-                } else if (y == 1 || y == HEIGHT) {
-                    column.add(1)
-                } else {
-                    column.add(0)
-                }
-            }
-            newMap.add(column)
-        }
-        gameMap = newMap
+        gameMap = MapGenerator.generateNew(HEIGHT, WIDTH)
 
-        // Innentől ne változtass
         players.forEach { (session, _) ->
             session.sendMessage(MapMessage(gameMap))
         }
@@ -186,7 +171,7 @@ class Lobby(val id: String) {
                 )
                 val gameBoard = game.playGame()
                 val winnerName = gameBoard[0].name
-                status = LobbyStatus.FINISHED
+                status = LobbyStatus.WAITING
 
                 players.forEach { (session, player) ->
                     if (player.name == winnerName) {
@@ -196,9 +181,6 @@ class Lobby(val id: String) {
                         session.sendMessage(GameOverMessage("$winnerName won!", Leaderboard(gameBoard)))
                     }
                 }
-                delay(10000L)
-
-                status = LobbyStatus.WAITING
             }
         }
     }
