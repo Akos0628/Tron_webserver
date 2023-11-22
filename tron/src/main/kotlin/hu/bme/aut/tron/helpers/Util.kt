@@ -51,4 +51,4 @@ suspend inline fun DefaultWebSocketServerSession.sendMessage(msg: ServerMessage)
     sendSerialized(msg)
 }
 
-fun List<List<Byte>>.isInside(x: Int, y: Int): Boolean = x >= 0 && y >= 0 && x < this.size && y < this[0].size
+fun List<List<Byte>>.isInside(x: Int, y: Int): Boolean = x >= 0 && y >= 0 && x < this[0].size && y < this.size

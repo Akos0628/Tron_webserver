@@ -3,6 +3,7 @@ package hu.bme.aut.tron.logic
 import hu.bme.aut.tron.api.BikeInfo
 import hu.bme.aut.tron.api.Direction
 import hu.bme.aut.tron.api.Direction.*
+import kotlinx.coroutines.delay
 
 class HardBot(
     private var map: List<List<Byte>>,
@@ -18,6 +19,7 @@ class HardBot(
 
         if (availableCells.isEmpty())
             availableCells.addAll(listOf(UP, RIGHT, DOWN, LEFT))
+        delay(100)
 
         return availableCells.random()
     }

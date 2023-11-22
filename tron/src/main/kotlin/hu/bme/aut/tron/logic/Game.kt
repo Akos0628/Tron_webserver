@@ -117,10 +117,10 @@ class Game(
             }
         }
         if (map.isInside(x,y)) {
-            val nextCell = map[x][y]
+            val nextCell = map[y][x]
             if (nextCell == 0.toByte()) {   // Üres cellára lép
                 bike.moveTo(x,y)
-                map[x][y] = bike.getColor()
+                map[y][x] = bike.getColor()
             } else if (nextCell == 1.toByte()) {    // Falra lép
                 bike.collide()
             } else if (map[y][x] == bike.getColor()) {  // Saját cellára
