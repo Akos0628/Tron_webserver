@@ -39,7 +39,7 @@ class BotClient(
         // Do nothing
     }
 
-    fun transformMap(x: Int, y: Int): List<Int> {
+    private fun transformMap(x: Int, y: Int): List<Int> {
         return listOf(
             map[x-1][y-1],
             map[x][y-1],

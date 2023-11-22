@@ -9,5 +9,6 @@ data class BoardRecord(
     val date: String,
     val numOfEnemies: Int
 ) {
-    constructor(): this("", -1, "", -1)
+    @Suppress("unused")
+    constructor(): this("", -1, "", -1) // Parameterless constructor is needed for firebase compatibility
 }

@@ -4,9 +4,9 @@ import com.typesafe.config.ConfigFactory
 import io.ktor.server.config.*
 
 object Config {
-    val config = HoconApplicationConfig(ConfigFactory.load())
+    private val config = HoconApplicationConfig(ConfigFactory.load())
 
-    fun getProperty(key: String): String? = config.propertyOrNull(key)?.getString()
+    private fun getProperty(key: String): String? = config.propertyOrNull(key)?.getString()
 
     fun requireProperty(key: String): String = getProperty(key)
             ?: throw IllegalStateException("Missing property $key")
