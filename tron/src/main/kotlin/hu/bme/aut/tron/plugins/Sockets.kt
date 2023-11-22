@@ -42,23 +42,45 @@ fun Application.configureSockets() {
                         when (lobby.status) {
                             LobbyStatus.WAITING -> {
                                 when (clientMessage) {
-                                    is NewMapMessage -> lobby.generateNewMap()
-                                    is NextColorMessage -> lobby.rollNextColor(session)
-                                    is SettingsMessage -> lobby.newSettings(session, clientMessage.settings)
-                                    is ReadyMessage -> lobby.handleReady(session, clientMessage.value)
+                                    is NewMapMessage -> {
+                                        println("Received NewMapMessage")
+                                        lobby.generateNewMap()
+                                    }
+                                    is NextColorMessage -> {
+                                        println("Received NextColorMessage")
+                                        lobby.rollNextColor(session)
+                                    }
+                                    is SettingsMessage -> {
+                                        println("Received SettingsMessage")
+                                        lobby.newSettings(session, clientMessage.settings) }
+                                    is ReadyMessage -> {
+                                        println("Received ReadyMessage")
+                                        lobby.handleReady(session, clientMessage.value)
+                                    }
                                     is LeaveMessage -> {
+                                        println("Received LeaveMessage")
                                         joined = false
                                     }
-                                    else -> session.sendMessage(BadMessage(WRONG_MESSAGE))
+                                    else -> {
+                                        println("Received bad message")
+                                        session.sendMessage(BadMessage(WRONG_MESSAGE))
+                                    }
                                 }
                             }
                             LobbyStatus.GAME -> {
                                 when (clientMessage) {
-                                    is StepMessage -> player.push(clientMessage)
+                                    is StepMessage -> {
+                                        println("Received StepMessage")
+                                        player.push(clientMessage)
+                                    }
                                     is LeaveMessage -> {
+                                        println("Received LeaveMessage")
                                         joined = false
                                     }
-                                    else -> session.sendMessage(BadMessage(WRONG_MESSAGE))
+                                    else -> {
+                                        println("Received bad message")
+                                        session.sendMessage(BadMessage(WRONG_MESSAGE))
+                                    }
                                 }
                             }
                         }
