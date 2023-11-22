@@ -18,7 +18,7 @@ const val COUNT_DOWN_SEC = 3
 const val MAX_PLAYER_LIMIT = 4
 const val HEIGHT = 25
 const val WIDTH = 45
-const val TURN_LIMIT = "1s"
+const val TURN_LIMIT = "5s"
 
 class Lobby(val id: String) {
     val visibility: Visibility = Visibility.CLOSED
