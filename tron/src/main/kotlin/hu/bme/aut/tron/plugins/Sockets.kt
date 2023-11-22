@@ -26,13 +26,13 @@ fun Application.configureSockets() {
     routing {
         webSocket("/lobby/{id?}") {
             val lobbyId = call.parameters["id"]!!
-            send(lobbyId)
+            println("Trying to join to lobby: $lobbyId")
             if(LobbyService.exists(lobbyId)) {
                 val lobby = LobbyService.getLobby(lobbyId)!!
                 val session = this
 
                 try {
-                    send("Checking lobby status")
+                    println("Checking lobby status")
                     val joinMessage = receiveDeserialized<JoinMessage>()
 
                     val player = Player(joinMessage.name, lobby.getAvailableColorId(), session)
