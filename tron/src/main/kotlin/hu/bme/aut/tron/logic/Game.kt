@@ -119,20 +119,20 @@ class Game(
         }
         if (map.isInside(x,y)) {
             val nextCell = map[y][x]
-            if (nextCell == 0.toByte()) {   // Üres cellára lép
+            if (nextCell == 0.toByte()) {   // Step on empty cell
                 bike.moveTo(x,y)
                 map[y][x] = bike.getColor()
-            } else if (nextCell == 1.toByte()) {    // Falra lép
+            } else if (nextCell == 1.toByte()) {    // Step on wall
                 bike.collide()
-            } else if (map[y][x] == bike.getColor()) {  // Saját cellára
+            } else if (map[y][x] == bike.getColor()) {  // Step to self
                 bike.collide()
-            } else {    // Más cellájára
+            } else {    // Step into someone
                 val killer = bikes.find { it.getColor() == map[y][x] }!!
                 killer.kills++
 
                 bike.collide()
             }
-        } else {    // Pályán kívül
+        } else {    // Step out
             bike.collide()
         }
     }

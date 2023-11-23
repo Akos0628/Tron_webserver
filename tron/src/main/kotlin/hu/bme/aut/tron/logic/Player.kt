@@ -1,6 +1,7 @@
 package hu.bme.aut.tron.logic
 
 import hu.bme.aut.tron.api.*
+import hu.bme.aut.tron.helpers.getCellSafe
 import hu.bme.aut.tron.helpers.sendMessage
 import io.ktor.server.websocket.*
 import kotlinx.coroutines.*
@@ -11,6 +12,7 @@ class Player(
     colorId: Byte,
     private val session: DefaultWebSocketServerSession
 ) : Driver(name, colorId) {
+    private lateinit var map: List<List<Byte>>
     var ready = false
     private var routes: List<BikeInfo> = emptyList()
     private var stepMessageQueue = MutableSharedFlow<StepMessage>()
@@ -27,21 +29,19 @@ class Player(
         }
 
         if (response == null) {
-            var automaticResponse: Pair<Direction, Position>
-            val myRoute = routes.find { it.colorId == colorId }!!.route
+            val availableCells = mutableListOf<Direction>()
+            if (map.getCellSafe(y+1, x) == 0.toByte()) { availableCells.add(Direction.UP) }
+            if (map.getCellSafe(y, x-1) == 0.toByte()) { availableCells.add(Direction.LEFT) }
+            if (map.getCellSafe(y-1, x) == 0.toByte()) { availableCells.add(Direction.DOWN) }
+            if (map.getCellSafe(y, x+1) == 0.toByte()) { availableCells.add(Direction.RIGHT) }
 
-            do {
-                automaticResponse = when ((0..3).random()) {
-                    0 -> Direction.UP to Position(x,y+1)
-                    1 -> Direction.RIGHT to Position(x+1,y)
-                    2 -> Direction.DOWN to Position(x,y-1)
-                    3 -> Direction.LEFT to Position(x-1,y)
-                    else -> Direction.UP to Position(x,y+1)
-                }
-            } while (myRoute.last() == automaticResponse.second)
-            session.sendMessage(TimeoutMessage("Response was too slow", automaticResponse.first))
+            if (availableCells.isEmpty())
+                availableCells.addAll(listOf(Direction.UP, Direction.RIGHT, Direction.DOWN, Direction.LEFT))
 
-            return@coroutineScope automaticResponse.first
+            val automaticResponse = availableCells.random()
+            session.sendMessage(TimeoutMessage("Response was too slow", automaticResponse))
+
+            return@coroutineScope automaticResponse
         } else {
             return@coroutineScope response
         }
@@ -49,6 +49,7 @@ class Player(
 
     override suspend fun currentState(newMap: List<List<Byte>>, routes: List<BikeInfo>) {
         this.routes = routes
+        map = newMap
         session.sendMessage(MapUpdateMessage(routes))
     }
 

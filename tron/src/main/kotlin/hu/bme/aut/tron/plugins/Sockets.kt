@@ -38,7 +38,6 @@ fun Application.configureSockets() {
                     var joined = lobby.playerJoin(session, player)
                     while (joined) {
                         val clientMessage = receiveDeserialized<ClientMessage>()
-                        // Itt határozzuk meg, hogy milyen üzenetet kell lekezelni
                         when (lobby.status) {
                             LobbyStatus.WAITING -> {
                                 when (clientMessage) {
