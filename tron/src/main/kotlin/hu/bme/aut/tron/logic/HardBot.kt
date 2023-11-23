@@ -3,6 +3,7 @@ package hu.bme.aut.tron.logic
 import hu.bme.aut.tron.api.BikeInfo
 import hu.bme.aut.tron.api.Direction
 import hu.bme.aut.tron.api.Direction.*
+import hu.bme.aut.tron.helpers.getCellSafe
 import kotlinx.coroutines.delay
 
 class HardBot(
@@ -12,10 +13,10 @@ class HardBot(
 ) : Driver(name, colorId) {
     override suspend fun move(x: Int, y: Int, timeout: Long): Direction {
         val availableCells = mutableListOf<Direction>()
-        if (map[y-1][x] == 0.toByte()) { availableCells.add(UP) }
-        if (map[y][x-1] == 0.toByte()) { availableCells.add(LEFT) }
-        if (map[y+1][x] == 0.toByte()) { availableCells.add(DOWN) }
-        if (map[y+1][x+1] == 0.toByte()) { availableCells.add(RIGHT) }
+        if (map.getCellSafe(y+1, x) == 0.toByte()) { availableCells.add(UP) }
+        if (map.getCellSafe(y, x-1) == 0.toByte()) { availableCells.add(LEFT) }
+        if (map.getCellSafe(y-1, x) == 0.toByte()) { availableCells.add(DOWN) }
+        if (map.getCellSafe(y, x+1) == 0.toByte()) { availableCells.add(RIGHT) }
 
         if (availableCells.isEmpty())
             availableCells.addAll(listOf(UP, RIGHT, DOWN, LEFT))

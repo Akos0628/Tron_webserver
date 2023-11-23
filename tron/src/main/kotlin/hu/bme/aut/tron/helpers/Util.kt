@@ -51,4 +51,18 @@ suspend inline fun DefaultWebSocketServerSession.sendMessage(msg: ServerMessage)
     sendSerialized(msg)
 }
 
+fun <T> List<List<T>>.getCellSafe(y: Int, x: Int) : T? {
+    if (y in this.indices && x in this[0].indices) {
+        return this[y][x]
+    }
+    return null
+}
+
+fun List<List<Byte>>.getCellWalled(y: Int, x: Int) : Byte {
+    if (y in this.indices && x in this[0].indices) {
+        return this[y][x]
+    }
+    return 1
+}
+
 fun List<List<Byte>>.isInside(x: Int, y: Int): Boolean = x >= 0 && y >= 0 && x < this[0].size && y < this.size

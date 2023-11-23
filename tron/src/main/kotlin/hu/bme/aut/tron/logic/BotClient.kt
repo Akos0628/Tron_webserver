@@ -2,6 +2,7 @@ package hu.bme.aut.tron.logic
 
 import hu.bme.aut.tron.api.BikeInfo
 import hu.bme.aut.tron.api.Direction
+import hu.bme.aut.tron.helpers.getCellWalled
 import hu.bme.aut.tron.plugins.client
 import hu.bme.aut.tron.service.Config
 import io.ktor.client.call.*
@@ -20,15 +21,17 @@ class BotClient(
         val list = transformMap(x,y)
         val response = client().get("$baseUrl$type/${list.joinToString(",")}").body<Int>()
 
-        println("Client AI choose: $response")
-
-        return when(response) {
+        val direction = when(response) {
             0 -> Direction.UP
             1 -> Direction.LEFT
             2 -> Direction.DOWN
             3 -> Direction.RIGHT
             else -> { throw IllegalArgumentException() }
         }
+
+        println("$name choose: $direction")
+
+        return direction
     }
 
     override suspend fun currentState(newMap: List<List<Byte>>, routes: List<BikeInfo>) {
@@ -41,15 +44,15 @@ class BotClient(
 
     private fun transformMap(x: Int, y: Int): List<Int> {
         return listOf(
-            map[y-1][x-1],
-            map[y-1][x],
-            map[y-1][x+1],
-            map[y][x-1],
-            map[y][x],
-            map[y][x+1],
-            map[y+1][x-1],
-            map[y+1][x],
-            map[y+1][x+1],
+            map.getCellWalled(y+1, x-1),
+            map.getCellWalled(y+1, x),
+            map.getCellWalled(y+1, x+1),
+            map.getCellWalled(y, x-1),
+            map.getCellWalled(y, x),
+            map.getCellWalled(y, x+1),
+            map.getCellWalled(y-1, x-1),
+            map.getCellWalled(y-1, x),
+            map.getCellWalled(y-1, x+1),
         ).map { it.asCell() }
     }
 

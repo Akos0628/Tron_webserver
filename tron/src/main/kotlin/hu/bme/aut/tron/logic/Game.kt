@@ -29,7 +29,7 @@ class Game(
         val colors = availableColors.toMutableList()
 
         val bots = settings.bots.map {
-            val color = colors.random()
+            val color = colors.first()
             colors -= color
 
             when(it.type) {

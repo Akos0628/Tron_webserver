@@ -10,7 +10,7 @@ nnbike = NNBike.NNBike()
 nnbike.load_model('model_jo.h5')
 
 qbike = QBike.QBike()
-qbike.load_model("QLearningV4(Hard).Qtable")
+qbike.load_model("QLearningV5.Qtable")
 
 @app.route('/')
 def hello_world():
