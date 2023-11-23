@@ -19,7 +19,7 @@ class BotClient(
 
     override suspend fun move(x: Int, y: Int, timeout: Long): Direction {
         val list = transformMap(x,y)
-        val response = client().get("$baseUrl$type/${list.joinToString(",")}").body<Int>()
+        val response = client.get("$baseUrl$type/${list.joinToString(",")}").body<Int>()
 
         val direction = when(response) {
             0 -> Direction.UP

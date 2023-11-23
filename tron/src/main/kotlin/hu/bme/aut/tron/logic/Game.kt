@@ -53,6 +53,7 @@ class Game(
                 y = Random.nextInt(HEIGHT)
             } while (map[y][x] != 0.toByte())
 
+            map[y][x] = it.colorId
             Bike(
                 it,
                 Position(x,y)

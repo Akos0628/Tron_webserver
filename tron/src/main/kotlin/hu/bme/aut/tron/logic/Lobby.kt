@@ -37,7 +37,7 @@ class Lobby(val id: String) {
 
     init {
         runBlocking {
-            val botTypesResponse = async { client().get("${Config.requireProperty("ktor.bots.serverAddress")}get_bike_models") }
+            val botTypesResponse = async { client.get("${Config.requireProperty("ktor.bots.serverAddress")}get_bike_models") }
             generateNewMap()
             availableBots = botTypesResponse.await().body<List<String>>().plus(listOf(EASY, HARD))
         }

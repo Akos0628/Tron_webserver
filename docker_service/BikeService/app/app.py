@@ -35,7 +35,7 @@ def qstep(map):
     #convert the map to a list of ints
     map = map.split(',')
     submap = np.array([int(map[0]), int(map[1]), int(map[2]),
-                       int(map[3]), int(map[4]), int(map[5]),
+                       int(map[3]), 0, int(map[5]),
                        int(map[6]), int(map[7]), int(map[8])])
 
     #get the next step

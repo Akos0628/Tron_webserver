@@ -36,7 +36,7 @@ fun Application.configureRouting() {
             )
         }
         get("/bots") {
-            val response = client().get("${Config.requireProperty("ktor.bots.serverAddress")}get_bike_models") {
+            val response = client.get("${Config.requireProperty("ktor.bots.serverAddress")}get_bike_models") {
                 accept(ContentType.Application.Json)
             }
 
@@ -47,14 +47,14 @@ fun Application.configureRouting() {
             val matrix = call.parameters["matrix"]!!
             println(matrix)
 
-            val response = client().get("${Config.requireProperty("ktor.bots.serverAddress")}nnstep/$matrix")
+            val response = client.get("${Config.requireProperty("ktor.bots.serverAddress")}nnstep/$matrix")
             call.respond(response.body<String>())
         }
         get("/test/q/{matrix}") {
             val matrix = call.parameters["matrix"]!!
             println(matrix)
 
-            val response = client().get("${Config.requireProperty("ktor.bots.serverAddress")}qstep/$matrix")
+            val response = client.get("${Config.requireProperty("ktor.bots.serverAddress")}qstep/$matrix")
             call.respond(response.body<String>())
         }
         //get("/leaderboardChange") {
