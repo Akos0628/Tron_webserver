@@ -43,7 +43,15 @@ class Lobby(val id: String) {
         }
     }
 
-    suspend fun generateNewMap() {
+    suspend fun generateMapSafe(initiator: DefaultWebSocketServerSession) {
+        if (initiator != leader) {
+            initiator.sendMessage(BadMessage("You are not authorized"))
+        } else {
+            generateNewMap()
+        }
+    }
+
+    private suspend fun generateNewMap() {
         gameMap = MapGenerator.generateNew(HEIGHT, WIDTH)
 
         players.forEach { (session, _) ->

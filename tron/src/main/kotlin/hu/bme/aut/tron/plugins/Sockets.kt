@@ -43,7 +43,7 @@ fun Application.configureSockets() {
                                 when (clientMessage) {
                                     is NewMapMessage -> {
                                         println("Received NewMapMessage")
-                                        lobby.generateNewMap()
+                                        lobby.generateMapSafe(session)
                                     }
                                     is NextColorMessage -> {
                                         println("Received NextColorMessage")
@@ -62,7 +62,7 @@ fun Application.configureSockets() {
                                         joined = false
                                     }
                                     is JoinMessage -> {
-                                        lobby.sendRefresh(this)
+                                        lobby.sendRefresh(session)
                                     }
                                     else -> {
                                         println("Received bad message")
