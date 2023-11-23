@@ -41,11 +41,11 @@ def qstep(map):
                        int(map[6]), int(map[7]), int(map[8])])
 
     #get the next step
-    step = qbike.step(submap)
+    step = qbikeV5.step(submap)
     return str(step)
 
 @app.route('/qstep_funky/<map>')
-def qstep(map):
+def funkystep(map):
     #convert the map to a list of ints
     map = map.split(',')
     submap = np.array([int(map[0]), int(map[1]), int(map[2]),
@@ -53,7 +53,7 @@ def qstep(map):
                        int(map[6]), int(map[7]), int(map[8])])
 
     #get the next step
-    step = qbike.step(submap)
+    step = qbikeV2.step(submap)
     return str(step)
 
 @app.route('/get_bike_models')

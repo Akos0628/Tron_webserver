@@ -15,7 +15,7 @@ import kotlinx.coroutines.*
 import kotlin.time.Duration
 
 const val COUNT_DOWN_SEC = 3
-const val MAX_PLAYER_LIMIT = 4
+const val MAX_PLAYER_LIMIT = 8
 const val HEIGHT = 26
 const val WIDTH = 46
 const val TURN_LIMIT = "5s"
