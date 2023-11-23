@@ -72,6 +72,21 @@ class Lobby(val id: String) {
         return true
     }
 
+    suspend fun sendRefresh(session: DefaultWebSocketServerSession) {
+        val playerInfos = players.map { (id, player) ->
+            ApiPlayer(
+                player.name,
+                player.colorId,
+                leader == id,
+                player.ready
+            )
+        }
+
+        session.sendMessage(PlayersMessage(playerInfos))
+        session.sendMessage(SettingsChangedMessage(gameSettings, availableBots))
+        session.sendMessage(MapMessage(gameMap))
+    }
+
     suspend fun disconnect(playerId: DefaultWebSocketServerSession) {
         val player = players[playerId]
         if (player != null) {

@@ -51,7 +51,8 @@ fun Application.configureSockets() {
                                     }
                                     is SettingsMessage -> {
                                         println("Received SettingsMessage")
-                                        lobby.newSettings(session, clientMessage.settings) }
+                                        lobby.newSettings(session, clientMessage.settings)
+                                    }
                                     is ReadyMessage -> {
                                         println("Received ReadyMessage")
                                         lobby.handleReady(session, clientMessage.value)
@@ -59,6 +60,9 @@ fun Application.configureSockets() {
                                     is LeaveMessage -> {
                                         println("Received LeaveMessage")
                                         joined = false
+                                    }
+                                    is JoinMessage -> {
+                                        lobby.sendRefresh(this)
                                     }
                                     else -> {
                                         println("Received bad message")
