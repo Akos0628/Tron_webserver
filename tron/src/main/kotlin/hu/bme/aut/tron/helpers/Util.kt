@@ -2,6 +2,7 @@ package hu.bme.aut.tron.helpers
 
 import hu.bme.aut.tron.api.*
 import io.ktor.server.websocket.*
+import kotlinx.coroutines.isActive
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
@@ -50,7 +51,9 @@ fun getRandomString(length: Int) : String {
 }
 
 suspend inline fun DefaultWebSocketServerSession.sendMessage(msg: ServerMessage) {
-    sendSerialized(msg)
+    if (this.isActive) {
+        sendSerialized(msg)
+    }
 }
 
 fun <T> List<List<T>>.getCellSafe(y: Int, x: Int) : T? {

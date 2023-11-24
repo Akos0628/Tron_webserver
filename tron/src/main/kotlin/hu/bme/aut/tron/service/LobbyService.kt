@@ -18,9 +18,9 @@ object LobbyService {
     }
 
     fun createNewLobby(): String {
-        var lobbyId = getRandomString(8)
+        var lobbyId = getRandomString(6)
         while (lobbies.containsKey(lobbyId)) {
-            lobbyId = getRandomString(8)
+            lobbyId = getRandomString(6)
         }
         lobbies += lobbyId to Lobby(lobbyId)
         return lobbyId
