@@ -24,10 +24,12 @@ class Player(
     override suspend fun move(x: Int, y: Int, timeout: Long, botDelay: Long): Direction = coroutineScope {
         session.sendMessage(RequestStepMessage(x,y))
 
-        val response = withTimeoutOrNull(timeout) {
-            val step = stepMessageQueue.first()
-            return@withTimeoutOrNull step.direction
-        }
+        val response = if (session.isActive) {
+            withTimeoutOrNull(timeout) {
+                val step = stepMessageQueue.first()
+                return@withTimeoutOrNull step.direction
+            }
+        } else { null }
 
         if (response == null) {
             val availableCells = mutableListOf<Direction>()
