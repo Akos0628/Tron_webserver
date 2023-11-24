@@ -36,6 +36,7 @@ val formatter = Json {
             subclass(TimeoutMessage::class)
             subclass(DieMessage::class)
             subclass(GameOverMessage::class)
+            subclass(YourColorMessage::class)
         }
     }
 }
