@@ -20,7 +20,7 @@ class Player(
         stepMessageQueue.emit(message)
     }
 
-    override suspend fun move(x: Int, y: Int, timeout: Long): Direction = coroutineScope {
+    override suspend fun move(x: Int, y: Int, timeout: Long, botDelay: Long): Direction = coroutineScope {
         session.sendMessage(RequestStepMessage(x,y))
 
         val response = withTimeoutOrNull(timeout) {

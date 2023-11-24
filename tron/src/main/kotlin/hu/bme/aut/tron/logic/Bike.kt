@@ -22,7 +22,7 @@ class Bike(
         route += position
     }
 
-    suspend fun requestStep(timeout: Long): Direction = driver.move(position.x, position.y, timeout)
+    suspend fun requestStep(timeout: Long, botDelay: Long): Direction = driver.move(position.x, position.y, timeout, botDelay)
 
     suspend fun sendUpdate(map: List<List<Byte>>, routes: List<BikeInfo>) = driver.currentState(map, routes)
 

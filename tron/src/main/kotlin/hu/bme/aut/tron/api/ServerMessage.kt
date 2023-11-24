@@ -57,3 +57,7 @@ data class DieMessage(val msg: String) : ServerMessage()
 @Serializable
 @SerialName("gameOver")
 data class GameOverMessage(val msg: String, val gameBoard: Leaderboard) : ServerMessage()
+
+@Serializable
+@SerialName("yourColor")
+data class YourColorMessage(val colorId: Byte) : ServerMessage()

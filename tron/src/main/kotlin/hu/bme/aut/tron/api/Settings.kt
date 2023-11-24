@@ -6,5 +6,6 @@ import kotlinx.serialization.Serializable
 data class Settings(
     val turnTimeLimit: Long,
     val playerLimit: Int,
-    val bots: List<RobotSettings>
+    val bots: List<RobotSettings>,
+    val botDelayTime: Long = 100
 )

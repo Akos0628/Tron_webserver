@@ -7,7 +7,7 @@ abstract class Driver(
     val name: String,
     var colorId: Byte
 ) {
-    abstract suspend fun move(x: Int, y: Int, timeout: Long): Direction
+    abstract suspend fun move(x: Int, y: Int, timeout: Long, botDelay: Long): Direction
     abstract suspend fun currentState(newMap: List<List<Byte>>, routes: List<BikeInfo>)
     abstract suspend fun die()
 }

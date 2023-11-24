@@ -10,8 +10,8 @@ class EasyBot(
     name: String,
     colorId: Byte
 ) : Driver(name, colorId) {
-    override suspend fun move(x: Int, y: Int, timeout: Long): Direction {
-        delay(100)
+    override suspend fun move(x: Int, y: Int, timeout: Long, botDelay: Long): Direction {
+        delay(botDelay)
         return (listOf(UP, RIGHT, DOWN, LEFT).random())
     }
 

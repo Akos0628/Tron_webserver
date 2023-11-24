@@ -7,6 +7,7 @@ import hu.bme.aut.tron.plugins.client
 import hu.bme.aut.tron.service.Config
 import io.ktor.client.call.*
 import io.ktor.client.request.*
+import kotlinx.coroutines.delay
 import java.lang.IllegalArgumentException
 
 class BotClient(
@@ -17,7 +18,7 @@ class BotClient(
 ) : Driver(name, colorId) {
     private val baseUrl = Config.requireProperty("ktor.bots.serverAddress")
 
-    override suspend fun move(x: Int, y: Int, timeout: Long): Direction {
+    override suspend fun move(x: Int, y: Int, timeout: Long, botDelay: Long): Direction {
         val list = transformMap(x,y)
         val response = client.get("$baseUrl$type/${list.joinToString(",")}").body<Int>()
 
@@ -31,6 +32,7 @@ class BotClient(
 
         println("$name choose: $direction")
 
+        delay(botDelay)
         return direction
     }
 

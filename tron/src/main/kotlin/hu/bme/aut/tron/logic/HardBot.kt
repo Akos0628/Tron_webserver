@@ -11,7 +11,7 @@ class HardBot(
     name: String,
     colorId: Byte
 ) : Driver(name, colorId) {
-    override suspend fun move(x: Int, y: Int, timeout: Long): Direction {
+    override suspend fun move(x: Int, y: Int, timeout: Long, botDelay: Long): Direction {
         val availableCells = mutableListOf<Direction>()
         if (map.getCellSafe(y+1, x) == 0.toByte()) { availableCells.add(UP) }
         if (map.getCellSafe(y, x-1) == 0.toByte()) { availableCells.add(LEFT) }
@@ -20,8 +20,8 @@ class HardBot(
 
         if (availableCells.isEmpty())
             availableCells.addAll(listOf(UP, RIGHT, DOWN, LEFT))
-        delay(100)
 
+        delay(botDelay)
         return availableCells.random()
     }
 

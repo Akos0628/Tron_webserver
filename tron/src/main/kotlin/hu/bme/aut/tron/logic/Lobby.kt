@@ -65,11 +65,15 @@ class Lobby(val id: String) {
         } else if(players.isEmpty()) {
             leader = id
             players += (id to player)
+
+            id.sendMessage(YourColorMessage(player.colorId))
             id.sendMessage(SettingsChangedMessage(gameSettings, availableBots))
             id.sendMessage(MapMessage(gameMap))
             sendLobbyPlayers()
         } else if(players.count() + gameSettings.bots.size < gameSettings.playerLimit) {
             players += (id to player)
+
+            id.sendMessage(YourColorMessage(player.colorId))
             id.sendMessage(SettingsChangedMessage(gameSettings, availableBots))
             id.sendMessage(MapMessage(gameMap))
             sendLobbyPlayers()
@@ -144,6 +148,7 @@ class Lobby(val id: String) {
         availableColors -= selected
         player.colorId = selected
 
+        session.sendMessage(YourColorMessage(player.colorId))
         sendLobbyPlayers()
     }
 

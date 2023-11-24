@@ -68,7 +68,7 @@ class Game(
         while(playing){
             bikes.filter { it.isAlive }.forEach { bike ->
                 if (bikes.filter { it.isAlive }.size > 1) {
-                    val dir = bike.requestStep(settings.turnTimeLimit)
+                    val dir = bike.requestStep(settings.turnTimeLimit, settings.botDelayTime)
                     stepPlayer(bike, dir)
                     handleRoutes()
                 } else {
