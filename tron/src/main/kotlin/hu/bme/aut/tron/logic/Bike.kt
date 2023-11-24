@@ -50,7 +50,7 @@ class Bike(
                 POINTS_FOR_LAST_ALIVE * aliveAsNum()
     }
 
-    fun idReady(): Boolean {
+    fun isReady(): Boolean {
         return driver.isReady()
     }
 

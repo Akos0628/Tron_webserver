@@ -10,6 +10,7 @@ import io.ktor.serialization.kotlinx.*
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
+import kotlinx.coroutines.launch
 import java.time.Duration
 
 const val WRONG_MESSAGE = "Can't use that function in the current state of the game"
@@ -55,7 +56,9 @@ fun Application.configureSockets() {
                                     }
                                     is ReadyMessage -> {
                                         println("Received ReadyMessage")
-                                        lobby.handleReady(session, clientMessage.value)
+                                        launch {
+                                            lobby.handleReady(session, clientMessage.value)
+                                        }
                                     }
                                     is LeaveMessage -> {
                                         println("Received LeaveMessage")

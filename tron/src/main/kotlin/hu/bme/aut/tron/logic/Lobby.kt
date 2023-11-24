@@ -190,23 +190,22 @@ class Lobby(val id: String) {
                 player.ready = false
                 player.inGame = false
             }
-            launch {
-                val game = Game(
-                    players.values.toList(),
-                    gameSettings,
-                    gameMap,
-                    availableColors,
-                    availableBots
-                )
 
-                val gameResult = game.playGame()
+            val game = Game(
+                players.values.toList(),
+                gameSettings,
+                gameMap,
+                availableColors,
+                availableBots
+            )
 
-                status = LobbyStatus.WAITING
-                players.forEach { (session, player) ->
-                    player.endedGame()
-                    val data = gameResult.firstOrNull { it.first == player.colorId }
-                    data?.let { session.sendMessage(GameOverMessage(it.second, it.third)) }
-                }
+            val gameResult = game.playGame()
+
+            status = LobbyStatus.WAITING
+            players.forEach { (session, player) ->
+                player.endedGame()
+                val data = gameResult.firstOrNull { it.first == player.colorId }
+                data?.let { session.sendMessage(GameOverMessage(it.second, it.third)) }
             }
         }
     }
