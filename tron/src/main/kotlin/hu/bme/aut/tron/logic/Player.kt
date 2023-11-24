@@ -14,6 +14,7 @@ class Player(
 ) : Driver(name, colorId) {
     private lateinit var map: List<List<Byte>>
     var ready = false
+    var inGame = false
     private var routes: List<BikeInfo> = emptyList()
     private var stepMessageQueue = MutableSharedFlow<StepMessage>()
     suspend fun push(message: StepMessage) {
@@ -55,5 +56,17 @@ class Player(
 
     override suspend fun die() {
         session.sendMessage(DieMessage("You died"))
+    }
+
+    override fun isReady(): Boolean {
+        return inGame
+    }
+
+    override suspend fun sendCountDown(sec: Int) {
+        session.sendMessage(CountDownMessage(sec))
+    }
+
+    fun endedGame() {
+        inGame = false
     }
 }

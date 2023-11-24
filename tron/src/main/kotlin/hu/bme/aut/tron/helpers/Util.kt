@@ -21,6 +21,7 @@ val formatter = Json {
             subclass(NextColorMessage::class)
             subclass(ReadyMessage::class)
             subclass(StepMessage::class)
+            subclass(InGameMessage::class)
         }
         polymorphic(ServerMessage::class) {
             subclass(BadMessage::class)

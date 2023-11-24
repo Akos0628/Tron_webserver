@@ -49,4 +49,12 @@ class Bike(
                 POINTS_FOR_KILLS * kills +
                 POINTS_FOR_LAST_ALIVE * aliveAsNum()
     }
+
+    fun idReady(): Boolean {
+        return driver.isReady()
+    }
+
+    suspend fun countDown(sec: Int) {
+        driver.sendCountDown(sec)
+    }
 }

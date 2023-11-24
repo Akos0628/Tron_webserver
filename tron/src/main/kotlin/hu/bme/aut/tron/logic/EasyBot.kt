@@ -19,7 +19,9 @@ class EasyBot(
         map = newMap
     }
 
-    override suspend fun die() {
-        // Do nothing
-    }
+    override suspend fun die() {}
+
+    override fun isReady(): Boolean { return true }
+
+    override suspend fun sendCountDown(sec: Int) {}
 }

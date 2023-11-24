@@ -40,9 +40,11 @@ class BotClient(
         map = newMap
     }
 
-    override suspend fun die() {
-        // Do nothing
-    }
+    override suspend fun die() {}
+
+    override fun isReady(): Boolean { return true }
+
+    override suspend fun sendCountDown(sec: Int) {}
 
     private fun transformMap(x: Int, y: Int): List<Int> {
         return listOf(

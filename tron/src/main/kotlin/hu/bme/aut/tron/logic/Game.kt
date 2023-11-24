@@ -5,6 +5,8 @@ import hu.bme.aut.tron.helpers.EASY
 import hu.bme.aut.tron.helpers.HARD
 import hu.bme.aut.tron.helpers.isInside
 import hu.bme.aut.tron.service.LeaderBoardService
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.withTimeout
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.random.Random
@@ -62,7 +64,19 @@ class Game(
     }
 
     suspend fun playGame(): List<Triple<Byte, Boolean, Int>> {
+        withTimeout(3000) {
+            while (!bikes.all { it.idReady() }) {
+                delay(100)
+            }
+        }
+
         handleRoutes()
+        (COUNT_DOWN_SEC downTo 1).forEach { sec ->
+            bikes.forEach { bike ->
+                bike.countDown(sec)
+            }
+            delay(1000L)
+        }
 
         var playing = true
         while(playing){

@@ -33,3 +33,7 @@ data class ReadyMessage(val value: Boolean) : ClientMessage()
 @Serializable
 @SerialName("step")
 data class StepMessage(val direction: Direction, val x: Int? = null, val y: Int? = null) : ClientMessage()
+
+@Serializable
+@SerialName("inGame")
+data class InGameMessage(val inGame: Boolean? = null) : ClientMessage()

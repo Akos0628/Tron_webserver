@@ -10,4 +10,6 @@ abstract class Driver(
     abstract suspend fun move(x: Int, y: Int, timeout: Long, botDelay: Long): Direction
     abstract suspend fun currentState(newMap: List<List<Byte>>, routes: List<BikeInfo>)
     abstract suspend fun die()
+    abstract fun isReady(): Boolean
+    abstract suspend fun sendCountDown(sec: Int)
 }

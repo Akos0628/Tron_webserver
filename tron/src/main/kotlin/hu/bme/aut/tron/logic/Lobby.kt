@@ -188,6 +188,7 @@ class Lobby(val id: String) {
             players.forEach { (session, player) ->
                 session.sendMessage(StartMessage())
                 player.ready = false
+                player.inGame = false
             }
             launch {
                 val game = Game(
@@ -202,6 +203,7 @@ class Lobby(val id: String) {
 
                 status = LobbyStatus.WAITING
                 players.forEach { (session, player) ->
+                    player.endedGame()
                     val data = gameResult.firstOrNull { it.first == player.colorId }
                     data?.let { session.sendMessage(GameOverMessage(it.second, it.third)) }
                 }
