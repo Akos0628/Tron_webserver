@@ -109,7 +109,6 @@ object MapGenerator {
                 }
             }
         }
-        println(walls.size)
         return walls
     }
 
@@ -224,10 +223,6 @@ object MapGenerator {
             if (symmetric == 2) {
                 map += map.reversedArray()
             }
-        }
-
-        for (row in map) {
-            println(row.joinToString(" ").replace("0", " "))
         }
 
         return map.map { row ->

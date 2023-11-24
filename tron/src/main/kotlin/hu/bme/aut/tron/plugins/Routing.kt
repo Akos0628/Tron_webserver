@@ -43,20 +43,6 @@ fun Application.configureRouting() {
             val list: List<String> = response.body()
             call.respond(list.plus(listOf(EASY, HARD)))
         }
-        get("/test/nn/{matrix}") {
-            val matrix = call.parameters["matrix"]!!
-            println(matrix)
-
-            val response = client.get("${Config.requireProperty("ktor.bots.serverAddress")}nnstep/$matrix")
-            call.respond(response.body<String>())
-        }
-        get("/test/q/{matrix}") {
-            val matrix = call.parameters["matrix"]!!
-            println(matrix)
-
-            val response = client.get("${Config.requireProperty("ktor.bots.serverAddress")}qstep/$matrix")
-            call.respond(response.body<String>())
-        }
         //get("/leaderboardChange") {
         //    call.respond(
         //        FirebaseDb.setBoard(
