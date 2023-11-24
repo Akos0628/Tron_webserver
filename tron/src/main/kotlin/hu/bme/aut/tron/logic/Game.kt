@@ -61,7 +61,7 @@ class Game(
         }
     }
 
-    suspend fun playGame(): List<BoardRecord> {
+    suspend fun playGame(): List<Triple<Byte, Boolean, Int>> {
         handleRoutes()
 
         var playing = true
@@ -92,7 +92,9 @@ class Game(
         println(gameLeaderboard)
         LeaderBoardService.updateBoardWith(gameLeaderboard)
 
-        return gameLeaderboard
+        return bikes.map {
+            Triple(it.getColor(), it.isAlive, it.getScore())
+        }
     }
 
     private suspend fun handleRoutes() {

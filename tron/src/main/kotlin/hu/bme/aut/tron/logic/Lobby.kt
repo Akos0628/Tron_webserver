@@ -197,17 +197,13 @@ class Lobby(val id: String) {
                     availableColors,
                     availableBots
                 )
-                val gameBoard = game.playGame()
-                val winnerName = gameBoard[0].name
+
+                val gameResult = game.playGame()
+
                 status = LobbyStatus.WAITING
-
                 players.forEach { (session, player) ->
-                    if (player.name == winnerName) {
-                        session.sendMessage(GameOverMessage("You won!", Leaderboard(gameBoard)))
-                    } else {
-
-                        session.sendMessage(GameOverMessage("$winnerName won!", Leaderboard(gameBoard)))
-                    }
+                    val data = gameResult.firstOrNull { it.first == player.colorId }
+                    data?.let { session.sendMessage(GameOverMessage(it.second, it.third)) }
                 }
             }
         }
