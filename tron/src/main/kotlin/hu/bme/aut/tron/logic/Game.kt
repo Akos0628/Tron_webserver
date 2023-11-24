@@ -72,10 +72,10 @@ class Game(
 
         handleRoutes()
         (COUNT_DOWN_SEC downTo 0).forEach { sec ->
+            delay(1000L)
             bikes.forEach { bike ->
                 bike.countDown(sec)
             }
-            delay(1000L)
         }
 
         var playing = true
