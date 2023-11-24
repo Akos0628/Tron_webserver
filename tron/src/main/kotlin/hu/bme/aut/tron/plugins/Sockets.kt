@@ -80,6 +80,9 @@ fun Application.configureSockets() {
                                         println("Received LeaveMessage")
                                         joined = false
                                     }
+                                    is InGameMessage -> {
+                                        player.inGame = true
+                                    }
                                     else -> {
                                         println("Received bad message")
                                         session.sendMessage(BadMessage(WRONG_MESSAGE))
