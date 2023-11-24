@@ -71,7 +71,7 @@ class Game(
         }
 
         handleRoutes()
-        (COUNT_DOWN_SEC downTo 1).forEach { sec ->
+        (COUNT_DOWN_SEC downTo 0).forEach { sec ->
             bikes.forEach { bike ->
                 bike.countDown(sec)
             }
