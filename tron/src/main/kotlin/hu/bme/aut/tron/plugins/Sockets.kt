@@ -1,10 +1,10 @@
 package hu.bme.aut.tron.plugins
 
 import hu.bme.aut.tron.api.*
-import hu.bme.aut.tron.logic.LobbyStatus
-import hu.bme.aut.tron.logic.Player
 import hu.bme.aut.tron.helpers.formatter
 import hu.bme.aut.tron.helpers.sendMessage
+import hu.bme.aut.tron.logic.LobbyStatus
+import hu.bme.aut.tron.logic.Player
 import hu.bme.aut.tron.service.LobbyService
 import io.ktor.serialization.kotlinx.*
 import io.ktor.server.application.*
@@ -70,7 +70,6 @@ fun Application.configureSockets() {
                                     is JoinMessage -> {
                                         lobby.sendRefresh(session)
                                     }
-                                    is PingMessage -> {}
                                     else -> {
                                         println("Received bad message")
                                         session.sendMessage(BadMessage(WRONG_MESSAGE))
@@ -90,7 +89,6 @@ fun Application.configureSockets() {
                                     is InGameMessage -> {
                                         player.inGame = true
                                     }
-                                    is PingMessage -> {}
                                     else -> {
                                         println("Received bad message")
                                         session.sendMessage(BadMessage(WRONG_MESSAGE))

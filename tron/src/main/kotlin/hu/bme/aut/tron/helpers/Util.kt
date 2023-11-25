@@ -23,7 +23,6 @@ val formatter = Json {
             subclass(ReadyMessage::class)
             subclass(StepMessage::class)
             subclass(InGameMessage::class)
-            subclass(PingMessage::class)
         }
         polymorphic(ServerMessage::class) {
             subclass(BadMessage::class)

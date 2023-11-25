@@ -23,8 +23,7 @@ const val HEIGHT = 26
 const val WIDTH = 46
 const val TURN_LIMIT = "5s"
 
-class Lobby(val id: String) {
-    val visibility: Visibility = Visibility.CLOSED
+class Lobby(private val id: String) {
     var status: LobbyStatus = LobbyStatus.WAITING
     private var players: Map<DefaultWebSocketServerSession, Player> = emptyMap()
     private var gameSettings = Settings(
