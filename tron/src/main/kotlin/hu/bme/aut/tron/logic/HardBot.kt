@@ -23,7 +23,7 @@ class HardBot(
 
     override fun isReady(): Boolean { return true }
 
-    override fun shouldAppearOnLeaderBoard(): Boolean { return true }
+    override fun shouldAppearOnLeaderBoard(): Boolean { return false }
 
     override suspend fun sendCountDown(sec: Int) {}
 }

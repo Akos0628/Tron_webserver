@@ -4,7 +4,7 @@ import hu.bme.aut.tron.api.Leaderboard
 import hu.bme.aut.tron.helpers.EASY
 import hu.bme.aut.tron.helpers.HARD
 import hu.bme.aut.tron.service.Config
-import hu.bme.aut.tron.service.FirebaseDb
+import hu.bme.aut.tron.service.LeaderBoardService
 import hu.bme.aut.tron.service.LobbyService
 import io.ktor.client.call.*
 import io.ktor.client.request.*
@@ -29,9 +29,7 @@ fun Application.configureRouting() {
         get("/leaderboard") {
             call.respond(
                 Leaderboard(
-                    FirebaseDb.getBoard().sortedByDescending {
-                        it.score
-                    }
+                    LeaderBoardService.getBoard()
                 )
             )
         }
@@ -43,26 +41,6 @@ fun Application.configureRouting() {
             val list: List<String> = response.body()
             call.respond(list.plus(listOf(EASY, HARD)))
         }
-        //get("/leaderboardChange") {
-        //    call.respond(
-        //        FirebaseDb.setBoard(
-        //            listOf(
-        //                BoardRecord(
-        //                    name = "akos",
-        //                    score = 0,
-        //                    date = "2023-11-18 22:33",
-        //                    numOfEnemies = 0
-        //                ),
-        //                BoardRecord(
-        //                    name = "akos2",
-        //                    score = 100,
-        //                    date = "2023-11-18 22:33",
-        //                    numOfEnemies = 1
-        //                )
-        //            )
-        //        )
-        //    )
-        //}
         route("/lobbies") {
             get {
                 call.respond(LobbyService.getAllOpen().map { it.id })

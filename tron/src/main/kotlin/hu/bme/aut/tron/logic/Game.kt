@@ -94,19 +94,21 @@ class Game(
         val current = SimpleDateFormat("yyyy-MM-dd HH:mm").format(Calendar.getInstance().time)
 
         val gameLeaderboard = bikes
-            .filter { it.shouldAppearOnLeaderBoard() }
             .map {
-                BoardRecord(
+                it.shouldAppearOnLeaderBoard() to BoardRecord(
                     name = it.getDriverName(),
                     score = it.getScore(),
                     date = current,
                     numOfEnemies = bikes.size-1
                 )
             }.sortedByDescending {
-                it.score
+                it.second.score
             }
-        println("Game ended with result: $gameLeaderboard")
-        LeaderBoardService.updateBoardWith(gameLeaderboard)
+        println("Game ended with result: ${gameLeaderboard.map { it.second }}")
+        if (gameLeaderboard.first().first) {
+            println("Updating leaderboard")
+            LeaderBoardService.updateBoardWithWinner(gameLeaderboard.first().second)
+        }
 
         return bikes.map {
             Triple(it.getColor(), it.isAlive, it.getScore())

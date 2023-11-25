@@ -4,12 +4,8 @@ import hu.bme.aut.tron.api.BoardRecord
 
 object LeaderBoardService {
     private val db: BoardDatabase = FirebaseDb
-    suspend fun updateBoardWith(leaderboard: List<BoardRecord>) {
-        val original = db.getBoard()
-        val new = (original + leaderboard).sortedByDescending {
-            it.score
-        }
 
-        db.setBoard(new)
-    }
+    fun getBoard() = db.getBoard()
+
+    suspend fun updateBoardWithWinner(winner: BoardRecord) = db.updateBoardWithWinner(winner)
 }

@@ -26,26 +26,29 @@ object FirebaseDb : BoardDatabase {
 
     override fun getBoard(): List<BoardRecord> {
         println("Leaderboard queried!!!")
-        return collection.get().get().toObjects(BoardRecord::class.java).take(limit)
+        return collection.limit(limit).get().get().toObjects(BoardRecord::class.java).sortedByDescending {
+            it.score
+        }
     }
 
-    override suspend fun setBoard(leaderboard: List<BoardRecord>): Unit = coroutineScope {
+    override suspend fun updateBoardWithWinner(winner: BoardRecord): Unit = coroutineScope {
         launch {
-            val batch = db.batch()
-
-            val docs = collection.get().get().documents
-            leaderboard
-                .take(limit)
-                .mapIndexed { index, record ->
-                    if (docs.size > index)
-                        batch.set(docs[index].reference, record)
-                    else
-                        batch.create(collection.document(), record)
+            val original = collection.limit(limit).get().get()
+            val originalBoard = original.toObjects(BoardRecord::class.java)
+            val emptyPlace = limit - originalBoard.size
+            if (emptyPlace > 0) {
+                collection.add(winner)
+            } else {
+                val originalDocuments = collection.limit(limit).get().get().documents
+                val zipped = originalDocuments.zip(originalBoard).sortedBy {
+                    it.second.score
                 }
 
-            batch.commit()
-
-            println("Leaderboard updated!!!")
+                if (zipped.first().second.score < winner.score) {
+                    zipped.first().first.reference.set(winner).get()
+                    println("Leaderboard updated!!!")
+                }
+            }
         }
     }
 }
