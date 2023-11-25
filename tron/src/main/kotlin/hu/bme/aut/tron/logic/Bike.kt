@@ -54,6 +54,8 @@ class Bike(
         return driver.isReady()
     }
 
+    fun shouldAppearOnLeaderBoard(): Boolean { return driver.shouldAppearOnLeaderBoard() }
+
     suspend fun countDown(sec: Int) {
         driver.sendCountDown(sec)
     }

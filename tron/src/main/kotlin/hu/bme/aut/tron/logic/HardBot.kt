@@ -2,8 +2,7 @@ package hu.bme.aut.tron.logic
 
 import hu.bme.aut.tron.api.BikeInfo
 import hu.bme.aut.tron.api.Direction
-import hu.bme.aut.tron.api.Direction.*
-import hu.bme.aut.tron.helpers.getCellSafe
+import hu.bme.aut.tron.helpers.chooseRandomAvailable
 import kotlinx.coroutines.delay
 
 class HardBot(
@@ -12,17 +11,8 @@ class HardBot(
     colorId: Byte
 ) : Driver(name, colorId) {
     override suspend fun move(x: Int, y: Int, timeout: Long, botDelay: Long): Direction {
-        val availableCells = mutableListOf<Direction>()
-        if (map.getCellSafe(y+1, x) == 0.toByte()) { availableCells.add(UP) }
-        if (map.getCellSafe(y, x-1) == 0.toByte()) { availableCells.add(LEFT) }
-        if (map.getCellSafe(y-1, x) == 0.toByte()) { availableCells.add(DOWN) }
-        if (map.getCellSafe(y, x+1) == 0.toByte()) { availableCells.add(RIGHT) }
-
-        if (availableCells.isEmpty())
-            availableCells.addAll(listOf(UP, RIGHT, DOWN, LEFT))
-
         delay(botDelay)
-        return availableCells.random()
+        return chooseRandomAvailable(map, x, y)
     }
 
     override suspend fun currentState(newMap: List<List<Byte>>, routes: List<BikeInfo>) {
@@ -32,6 +22,8 @@ class HardBot(
     override suspend fun die() {}
 
     override fun isReady(): Boolean { return true }
+
+    override fun shouldAppearOnLeaderBoard(): Boolean { return true }
 
     override suspend fun sendCountDown(sec: Int) {}
 }

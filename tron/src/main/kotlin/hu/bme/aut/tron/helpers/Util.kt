@@ -44,6 +44,19 @@ val formatter = Json {
     }
 }
 
+fun chooseRandomAvailable(map: List<List<Byte>>, x: Int, y: Int) : Direction {
+    val availableCells = mutableListOf<Direction>()
+    if (map.getCellSafe(y+1, x) == 0.toByte()) { availableCells.add(Direction.UP) }
+    if (map.getCellSafe(y, x-1) == 0.toByte()) { availableCells.add(Direction.LEFT) }
+    if (map.getCellSafe(y-1, x) == 0.toByte()) { availableCells.add(Direction.DOWN) }
+    if (map.getCellSafe(y, x+1) == 0.toByte()) { availableCells.add(Direction.RIGHT) }
+
+    if (availableCells.isEmpty())
+        availableCells.addAll(listOf(Direction.UP, Direction.RIGHT, Direction.DOWN, Direction.LEFT))
+
+    return availableCells.random()
+}
+
 fun getRandomString(length: Int) : String {
     val allowedChars = (('A'..'Z') + ('a'..'z') + ('0'..'9')).filterNot { it == 'l' }
     return (1..length)

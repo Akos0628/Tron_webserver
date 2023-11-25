@@ -23,5 +23,7 @@ class EasyBot(
 
     override fun isReady(): Boolean { return true }
 
+    override fun shouldAppearOnLeaderBoard(): Boolean { return true }
+
     override suspend fun sendCountDown(sec: Int) {}
 }

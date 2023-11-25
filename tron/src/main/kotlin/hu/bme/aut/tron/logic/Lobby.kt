@@ -39,7 +39,12 @@ class Lobby(val id: String) {
         runBlocking {
             val botTypesResponse = async { client.get("${Config.requireProperty("ktor.bots.serverAddress")}get_bike_models") }
             generateNewMap()
-            availableBots = botTypesResponse.await().body<List<String>>().plus(listOf(EASY, HARD))
+            availableBots = try {
+                botTypesResponse.await().body<List<String>>().plus(listOf(EASY, HARD))
+            } catch (e: Exception) {
+                println("Bot server is unavailable")
+                listOf(EASY, HARD)
+            }
         }
     }
 

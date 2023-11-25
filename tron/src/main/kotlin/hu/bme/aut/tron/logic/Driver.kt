@@ -11,5 +11,6 @@ abstract class Driver(
     abstract suspend fun currentState(newMap: List<List<Byte>>, routes: List<BikeInfo>)
     abstract suspend fun die()
     abstract fun isReady(): Boolean
+    abstract fun shouldAppearOnLeaderBoard(): Boolean
     abstract suspend fun sendCountDown(sec: Int)
 }

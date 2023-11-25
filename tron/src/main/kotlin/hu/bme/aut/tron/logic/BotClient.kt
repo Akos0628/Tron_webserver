@@ -2,13 +2,13 @@ package hu.bme.aut.tron.logic
 
 import hu.bme.aut.tron.api.BikeInfo
 import hu.bme.aut.tron.api.Direction
+import hu.bme.aut.tron.helpers.chooseRandomAvailable
 import hu.bme.aut.tron.helpers.getCellWalled
 import hu.bme.aut.tron.plugins.client
 import hu.bme.aut.tron.service.Config
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import kotlinx.coroutines.delay
-import java.lang.IllegalArgumentException
 
 class BotClient(
     private var map: List<List<Byte>>,
@@ -20,14 +20,18 @@ class BotClient(
 
     override suspend fun move(x: Int, y: Int, timeout: Long, botDelay: Long): Direction {
         val list = transformMap(x,y)
-        val response = client.get("$baseUrl$type/${list.joinToString(",")}").body<Int>()
+        val direction = try {
+            val response = client.get("$baseUrl$type/${list.joinToString(",")}").body<Int>()
 
-        val direction = when(response) {
-            0 -> Direction.UP
-            1 -> Direction.LEFT
-            2 -> Direction.DOWN
-            3 -> Direction.RIGHT
-            else -> { throw IllegalArgumentException() }
+            when(response) {
+                0 -> Direction.UP
+                1 -> Direction.LEFT
+                2 -> Direction.DOWN
+                3 -> Direction.RIGHT
+                else -> { throw IllegalArgumentException() }
+            }
+        } catch (e: Exception) {
+            chooseRandomAvailable(map, x, y)
         }
 
         println("$name choose: $direction")
@@ -43,6 +47,8 @@ class BotClient(
     override suspend fun die() {}
 
     override fun isReady(): Boolean { return true }
+
+    override fun shouldAppearOnLeaderBoard(): Boolean { return true }
 
     override suspend fun sendCountDown(sec: Int) {}
 

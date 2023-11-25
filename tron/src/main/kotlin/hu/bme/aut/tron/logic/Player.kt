@@ -1,11 +1,14 @@
 package hu.bme.aut.tron.logic
 
 import hu.bme.aut.tron.api.*
-import hu.bme.aut.tron.helpers.getCellSafe
+import hu.bme.aut.tron.helpers.chooseRandomAvailable
 import hu.bme.aut.tron.helpers.sendMessage
 import io.ktor.server.websocket.*
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.withTimeoutOrNull
 
 class Player(
     name: String,
@@ -32,16 +35,7 @@ class Player(
         } else { null }
 
         if (response == null) {
-            val availableCells = mutableListOf<Direction>()
-            if (map.getCellSafe(y+1, x) == 0.toByte()) { availableCells.add(Direction.UP) }
-            if (map.getCellSafe(y, x-1) == 0.toByte()) { availableCells.add(Direction.LEFT) }
-            if (map.getCellSafe(y-1, x) == 0.toByte()) { availableCells.add(Direction.DOWN) }
-            if (map.getCellSafe(y, x+1) == 0.toByte()) { availableCells.add(Direction.RIGHT) }
-
-            if (availableCells.isEmpty())
-                availableCells.addAll(listOf(Direction.UP, Direction.RIGHT, Direction.DOWN, Direction.LEFT))
-
-            val automaticResponse = availableCells.random()
+            val automaticResponse = chooseRandomAvailable(map, x, y)
             session.sendMessage(TimeoutMessage("Response was too slow", automaticResponse))
 
             return@coroutineScope automaticResponse
@@ -63,6 +57,8 @@ class Player(
     override fun isReady(): Boolean {
         return inGame
     }
+
+    override fun shouldAppearOnLeaderBoard(): Boolean { return true }
 
     override suspend fun sendCountDown(sec: Int) {
         session.sendMessage(CountDownMessage(sec))
