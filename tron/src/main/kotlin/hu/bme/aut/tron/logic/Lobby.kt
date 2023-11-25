@@ -11,7 +11,10 @@ import hu.bme.aut.tron.service.MapGenerator
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.server.websocket.*
-import kotlinx.coroutines.*
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import kotlin.time.Duration
 
 const val COUNT_DOWN_SEC = 3
@@ -206,12 +209,12 @@ class Lobby(val id: String) {
 
             val gameResult = game.playGame()
 
-            status = LobbyStatus.WAITING
             players.forEach { (session, player) ->
                 player.endedGame()
                 val data = gameResult.firstOrNull { it.first == player.colorId }
                 data?.let { session.sendMessage(GameOverMessage(it.second, it.third)) }
             }
+            status = LobbyStatus.WAITING
         }
     }
 }
