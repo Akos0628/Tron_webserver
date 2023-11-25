@@ -37,3 +37,7 @@ data class StepMessage(val direction: Direction, val x: Int? = null, val y: Int?
 @Serializable
 @SerialName("inGame")
 data class InGameMessage(val inGame: Boolean? = null) : ClientMessage()
+
+@Serializable
+@SerialName("ping")
+data class PingMessage(val msg: String? = null) : ClientMessage()

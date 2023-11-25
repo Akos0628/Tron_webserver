@@ -70,6 +70,7 @@ fun Application.configureSockets() {
                                     is JoinMessage -> {
                                         lobby.sendRefresh(session)
                                     }
+                                    is PingMessage -> {}
                                     else -> {
                                         println("Received bad message")
                                         session.sendMessage(BadMessage(WRONG_MESSAGE))
@@ -89,6 +90,7 @@ fun Application.configureSockets() {
                                     is InGameMessage -> {
                                         player.inGame = true
                                     }
+                                    is PingMessage -> {}
                                     else -> {
                                         println("Received bad message")
                                         session.sendMessage(BadMessage(WRONG_MESSAGE))
