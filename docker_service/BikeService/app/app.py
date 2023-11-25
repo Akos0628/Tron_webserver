@@ -14,45 +14,33 @@ qbikeV5.load_model("QLearningV5.Qtable")
 qbikeV2 = QBike.QBike()
 qbikeV2.load_model("QLearningV2-Funky.Qtable")
 
-@app.route('/')
-def hello_world():
-    print("hello worldben vagyok")
-    return 'Hello, World!'
-
-#define a function that takes a map and returns the next step
 @app.route('/nnstep/<map>')
 def nnstep(map):
-    #convert the map to a list of ints
     map = map.split(',')
     submap = np.array([[int(map[0]), int(map[1]), int(map[2])],
                        [int(map[3]), int(map[4]), int(map[5])],
                        [int(map[6]), int(map[7]), int(map[8])]])
 
-    #get the next step
     step = nnbike.step(submap)
     return str(step)
 
 @app.route('/qstep/<map>')
 def qstep(map):
-    #convert the map to a list of ints
     map = map.split(',')
     submap = np.array([int(map[0]), int(map[1]), int(map[2]),
                        int(map[3]), 0, int(map[5]),
                        int(map[6]), int(map[7]), int(map[8])])
 
-    #get the next step
     step = qbikeV5.step(submap)
     return str(step)
 
 @app.route('/qstep_funky/<map>')
 def funkystep(map):
-    #convert the map to a list of ints
     map = map.split(',')
     submap = np.array([int(map[0]), int(map[1]), int(map[2]),
                        int(map[3]), 0, int(map[5]),
                        int(map[6]), int(map[7]), int(map[8])])
 
-    #get the next step
     step = qbikeV2.step(submap)
     return str(step)
 

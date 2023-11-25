@@ -19,8 +19,7 @@ class NNBike():
         self.input_shape = (3, 3, 1)
         self.num_actions = 4  # Number of possible actions
         self.epochs = epoch
-        
-        #basic cnn model the input is 3*3*1 matrix, the output is 4*1 matrix
+
         self.model = tf.keras.Sequential([
             tf.keras.layers.Conv2D(3, (1, 1), padding='same', activation='relu', input_shape=self.input_shape),
             tf.keras.layers.Flatten(),
@@ -38,8 +37,6 @@ class NNBike():
         history = self.model.fit(X, y, epochs=self.epochs, validation_data=(X_val, y_val))
         return history
 
-        
-    #train function with validation data
     def train(self, X, y, X_val, y_val):
         history = self.model.fit(X, y, epochs=self.epochs, validation_data=(X_val, y_val))
         return history
@@ -51,10 +48,8 @@ class NNBike():
     
     def step(self, map):
         m = np.array(map).reshape(1, 3, 3, 1)
-        #all non 0 values to 1
         m[m != 0] = 1
 
-        #predict the next step
         step = self.predict(m)
         print(step)
         step = np.argmax(step)

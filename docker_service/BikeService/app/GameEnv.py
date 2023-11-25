@@ -100,9 +100,7 @@ class GameEnv:
 
     def update_map(self, bike, dir):
         map = self.step(self.map, bike, dir)
-        #draw map
         self.draw_map(map, self.screen)
-        #pygame.time.delay(10)
 
     def step(self, map, bike, direction):
         if direction == UP:
