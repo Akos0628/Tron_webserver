@@ -1,0 +1,16 @@
+version: "3"
+services:
+  bot-service:
+    build: ./docker_service/BikeService
+    ports:
+      - 5000:5000
+  tron-service:
+    build: ./tron
+    environment:
+      - BOT_SERVER_ADDRESS=http://bot-service:5000/
+      - PROJECT_ID=graceful-castle-401412
+      - GOOGLE_APPLICATION_CREDENTIALS=/app/credentials/{credential_file_name}
+    ports:
+      - 8080:8080
+    volumes:
+      - ./credentials:/app/credentials
